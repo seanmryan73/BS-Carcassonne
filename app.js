@@ -358,7 +358,7 @@ function renderSheetStep3() {
       <div class="detail-row"><label>Completed cities</label>${stepper('cities', d.cities, 1)}</div>`;
   } else if (type === 'other') {
     fields = `
-      <div class="detail-row"><label>Points</label>${stepper('points', d.points, 0)}</div>`;
+      <div class="detail-row"><label>Points</label>${stepper('points', d.points, -99)}</div>`;
   }
 
   const pts = calcScore(type, d);
@@ -542,7 +542,7 @@ document.addEventListener('click', e => {
   else if (action === 'surrounding-inc')    { sheet.details.surrounding = Math.min(8, sheet.details.surrounding + 1); renderSheet(); }
   else if (action === 'cities-dec')         { sheet.details.cities = Math.max(1, sheet.details.cities - 1); renderSheet(); }
   else if (action === 'cities-inc')         { sheet.details.cities++; renderSheet(); }
-  else if (action === 'points-dec')         { sheet.details.points = Math.max(0, sheet.details.points - 1); renderSheet(); }
+  else if (action === 'points-dec')         { sheet.details.points = Math.max(-99, sheet.details.points - 1); renderSheet(); }
   else if (action === 'points-inc')         { sheet.details.points++; renderSheet(); }
   else if (action === 'toggle-complete')    { sheet.details.complete = !sheet.details.complete; renderSheet(); }
   else if (action === 'toggle-cathedral')   { sheet.details.cathedral = !sheet.details.cathedral; renderSheet(); }
