@@ -1,6 +1,6 @@
 const STORAGE_KEY = 'carc_game';
-const PLAYER_COLORS = ['#c0392b', '#2980b9', '#27ae60', '#f39c12', '#2c3e50', '#7f8c8d'];
-const DEFAULT_NAMES = ['Alice', 'Bob', 'Carol', 'Dave', 'Eve', 'Frank'];
+const PLAYER_COLORS = ['#e91e8c', '#2980b9', '#2c3e50', '#f39c12', '#27ae60', '#c0392b'];
+const DEFAULT_NAMES = ['Sean', 'Casey', 'Ted', 'Jim', 'Greg', 'Logan'];
 
 // ── State ─────────────────────────────────────────────────────────────────────
 
