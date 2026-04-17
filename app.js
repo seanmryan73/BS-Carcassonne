@@ -9,7 +9,7 @@ let state = {
   events: [],
   phase: 'setup',
   nextEventId: 0,
-  playerCount: 2
+  playerCount: 6
 };
 
 // Setup-only state: names and colors before game starts
