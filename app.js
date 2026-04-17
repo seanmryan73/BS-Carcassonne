@@ -63,6 +63,9 @@ function calcScore(type, d) {
   if (type === 'farm') {
     return (parseInt(d.cities) || 0) * 3;
   }
+  if (type === 'pig-farm') {
+    return (parseInt(d.cities) || 0) * 4;
+  }
   if (type === 'other') {
     return parseInt(d.points) || 0;
   }
@@ -118,7 +121,7 @@ function dispatch(type, payload = {}) {
 // ── Feature label ─────────────────────────────────────────────────────────────
 
 function featureLabel(type, d) {
-  const labels = { city: 'City', road: 'Road', monastery: 'Monastery', farm: 'Farm', other: 'Other' };
+  const labels = { city: 'City', road: 'Road', monastery: 'Monastery', farm: 'Farm', 'pig-farm': 'Pig Farm', other: 'Other' };
   const name = labels[type] ?? type;
   const notes = [];
   if (type === 'city') {
@@ -132,7 +135,7 @@ function featureLabel(type, d) {
     if (d.inn) notes.push('inn');
   } else if (type === 'monastery') {
     notes.push(d.complete ? 'complete' : `${d.surrounding} surrounding`);
-  } else if (type === 'farm') {
+  } else if (type === 'farm' || type === 'pig-farm') {
     notes.push(`${d.cities} ${d.cities == 1 ? 'city' : 'cities'}`);
   }
   return notes.length ? `${name} (${notes.join(', ')})` : name;
@@ -309,6 +312,7 @@ function renderSheetStep2() {
     { id: 'road',      icon: '🛣️',  label: 'Road' },
     { id: 'monastery', icon: '⛪',  label: 'Monastery' },
     { id: 'farm',      icon: '🌾',  label: 'Farm' },
+    { id: 'pig-farm',  icon: '🐷',  label: 'Pig Farm' },
     { id: 'other',     icon: '✏️',  label: 'Other' },
   ];
 
@@ -355,7 +359,7 @@ function renderSheetStep3() {
     fields = `
       <div class="toggle-row">${toggleBtn('toggle-complete', d.complete, 'Complete')}</div>
       ${surroundRow}`;
-  } else if (type === 'farm') {
+  } else if (type === 'farm' || type === 'pig-farm') {
     fields = `
       <div class="detail-row"><label>Completed cities</label>${stepper('cities', d.cities, 1)}</div>`;
   } else if (type === 'other') {
@@ -370,7 +374,7 @@ function renderSheetStep3() {
   const warning = showWarning
     ? `<div class="score-warning">0 pts — incomplete feature with ${type === 'road' ? 'inn' : 'cathedral'}</div>`
     : '';
-  const icons = { city: '🏰', road: '🛣️', monastery: '⛪', farm: '🌾', other: '✏️' };
+  const icons = { city: '🏰', road: '🛣️', monastery: '⛪', farm: '🌾', 'pig-farm': '🐷', other: '✏️' };
 
   return `
     <div class="sheet-handle"></div>
