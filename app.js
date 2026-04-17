@@ -51,7 +51,7 @@ function calcScore(type, d) {
   if (type === 'city') {
     if (d.cathedral && !d.complete) return 0;
     const mult = d.cathedral ? 3 : (d.complete ? 2 : 1);
-    return (tiles + pennants) * mult;
+    return tiles * mult;
   }
   if (type === 'road') {
     if (d.inn && !d.complete) return 0;
@@ -126,7 +126,6 @@ function featureLabel(type, d) {
   const notes = [];
   if (type === 'city') {
     notes.push(`${d.tiles} tile${d.tiles != 1 ? 's' : ''}`);
-    if (d.pennants > 0) notes.push(`${d.pennants} pennant${d.pennants != 1 ? 's' : ''}`);
     if (!d.complete) notes.push('incomplete');
     if (d.cathedral) notes.push('cathedral');
   } else if (type === 'road') {
@@ -334,7 +333,6 @@ function renderSheetStep3() {
   if (type === 'city') {
     fields = `
       <div class="detail-row"><label>Tiles</label>${stepper('tiles', d.tiles, 1)}</div>
-      <div class="detail-row"><label>Pennants</label>${stepper('pennants', d.pennants, 0)}</div>
       <div class="toggle-row">
         ${toggleBtn('toggle-complete', d.complete, 'Complete')}
         ${toggleBtn('toggle-cathedral', d.cathedral, 'Cathedral')}
