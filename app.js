@@ -110,8 +110,7 @@ function dispatch(type, payload = {}) {
   } else if (type === 'END_GAME') {
     state.phase = 'ended';
   } else if (type === 'NEW_GAME') {
-    state = { players: [], events: [], phase: 'setup', nextEventId: 0, playerCount: 2 };
-    setupPlayers = DEFAULT_NAMES.map((name, i) => ({ name, color: PLAYER_COLORS[i] }));
+    state = { players: [], events: [], phase: 'setup', nextEventId: 0, playerCount: state.playerCount };
   }
   saveState();
   render();
