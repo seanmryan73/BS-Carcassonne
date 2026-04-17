@@ -417,21 +417,12 @@ input  { font-family: inherit; font-size: inherit; }
   transition: border-color 0.15s, background 0.15s;
   position: relative;
 }
-.player-select-btn.selected {
-  border-color: var(--player-color);
-  background: var(--surface);
-}
 .psel-dot {
   width: 14px;
   height: 14px;
   border-radius: 50%;
   background: var(--player-color);
   flex-shrink: 0;
-}
-.psel-check {
-  margin-left: auto;
-  font-size: 0.85rem;
-  color: var(--player-color);
 }
 
 .btn-sheet-next {

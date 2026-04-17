@@ -284,16 +284,12 @@ function toggleBtn(action, checked, label) {
 }
 
 function renderSheetStep1() {
-  const btns = state.players.map(p => {
-    const sel = sheet.playerIds.includes(p.id);
-    return `
-      <button type="button" class="player-select-btn ${sel ? 'selected' : ''}"
-              style="--player-color:${p.color}" data-action="toggle-player" data-player-id="${p.id}">
-        <div class="psel-dot"></div>
-        <span>${escHtml(p.name)}</span>
-        ${sel ? '<span class="psel-check">✓</span>' : ''}
-      </button>`;
-  }).join('');
+  const btns = state.players.map(p => `
+    <button type="button" class="player-select-btn"
+            style="--player-color:${p.color}" data-action="select-player" data-player-id="${p.id}">
+      <div class="psel-dot"></div>
+      <span>${escHtml(p.name)}</span>
+    </button>`).join('');
 
   return `
     <div class="sheet-handle"></div>
@@ -301,9 +297,7 @@ function renderSheetStep1() {
       <h2 class="sheet-title">Who scored?</h2>
       <button type="button" class="btn-sheet-close" data-action="close-sheet">✕</button>
     </div>
-    <div class="player-select-grid">${btns}</div>
-    <button type="button" class="btn-primary btn-sheet-next" data-action="sheet-next"
-            ${sheet.playerIds.length === 0 ? 'disabled' : ''}>Next →</button>`;
+    <div class="player-select-grid">${btns}</div>`;
 }
 
 function renderSheetStep2() {
@@ -529,13 +523,9 @@ document.addEventListener('click', e => {
     sheet.step--;
     renderSheet();
 
-  } else if (action === 'sheet-next') {
-    if (sheet.playerIds.length > 0) { sheet.step = 2; renderSheet(); }
-
-  } else if (action === 'toggle-player') {
-    const id = parseInt(btn.dataset.playerId);
-    const idx = sheet.playerIds.indexOf(id);
-    if (idx === -1) sheet.playerIds.push(id); else sheet.playerIds.splice(idx, 1);
+  } else if (action === 'select-player') {
+    sheet.playerIds = [parseInt(btn.dataset.playerId)];
+    sheet.step = 2;
     renderSheet();
 
   } else if (action === 'select-type') {
