@@ -1,7 +1,7 @@
 {
-  "name": "Carcassonne Score Tracker",
-  "short_name": "Carcassonne",
-  "description": "Score tracker for Carcassonne board game",
+  "name": "TillyTally Unofficial Scoring for Carcassonne",
+  "short_name": "TillyTally",
+  "description": "Unofficial score tracker for Carcassonne board game",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#f5efe4",

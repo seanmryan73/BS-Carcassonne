@@ -163,8 +163,8 @@ function renderSetup() {
     <div class="screen setup-screen">
       <div class="setup-hero">
         <div class="app-icon-large">🏰</div>
-        <h1 class="app-title">Carcassonne</h1>
-        <p class="app-subtitle">Score Tracker</p>
+        <h1 class="app-title">TillyTally</h1>
+        <p class="app-subtitle">Unofficial Scoring for Carcassonne</p>
       </div>
       <div class="setup-form">
         <div class="field-row">
