@@ -347,7 +347,7 @@ input  { font-family: inherit; font-size: inherit; }
   right: 0;
   background: var(--surface);
   border-radius: 24px 24px 0 0;
-  padding: 0 20px calc(24px + env(safe-area-inset-bottom));
+  padding: 0 20px 0;
   z-index: 101;
   max-height: 90dvh;
   overflow-y: auto;
@@ -579,7 +579,16 @@ input  { font-family: inherit; font-size: inherit; }
   margin-top: 8px;
 }
 
-.btn-add-score { margin-top: 0; }
+.btn-add-score {
+  position: sticky;
+  bottom: 0;
+  margin: 8px -20px 0;
+  padding-left: 20px;
+  padding-right: 20px;
+  border-radius: 0;
+  background: var(--primary);
+  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+}
 
 /* ── Toast ────────────────────────────────────────────────── */
 #toast {
