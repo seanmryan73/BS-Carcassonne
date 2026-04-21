@@ -357,7 +357,13 @@ input  { font-family: inherit; font-size: inherit; }
   will-change: transform;
 }
 #sheet.open { transform: translateY(0); }
-#sheet.sheet-fullscreen { max-height: 100dvh; border-radius: 0; }
+#sheet.sheet-fullscreen {
+  top: 0;
+  max-height: 100dvh;
+  border-radius: 0;
+  display: flex;
+  flex-direction: column;
+}
 
 .sheet-handle {
   width: 36px;
@@ -581,14 +587,8 @@ input  { font-family: inherit; font-size: inherit; }
 }
 
 .btn-add-score {
-  position: sticky;
-  bottom: 0;
-  margin: 8px -20px 0;
-  padding-left: 20px;
-  padding-right: 20px;
-  border-radius: 0;
-  background: var(--primary);
-  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  margin-top: 8px;
+  margin-bottom: calc(16px + env(safe-area-inset-bottom));
 }
 
 /* ── Toast ────────────────────────────────────────────────── */

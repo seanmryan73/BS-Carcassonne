@@ -431,6 +431,16 @@ function closeSheet() {
   sheet.open = false;
 }
 
+// ── Scroll Add Score into view when keyboard opens on step 3 ─────────────────
+
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', () => {
+    if (!sheet.open || sheet.step !== 3) return;
+    const btn = document.querySelector('[data-action="add-score"]');
+    if (btn) btn.scrollIntoView({ block: 'end', behavior: 'smooth' });
+  });
+}
+
 // ── Toast ─────────────────────────────────────────────────────────────────────
 
 let toastTimer;
