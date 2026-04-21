@@ -181,11 +181,12 @@ function renderSetup() {
 
 function renderScoreboard() {
   const chips = state.players.map(p => `
-    <div class="score-chip" style="--player-color:${p.color}">
+    <button type="button" class="score-chip" style="--player-color:${p.color}"
+            data-action="open-sheet-for-player" data-player-id="${p.id}">
       <div class="chip-dot"></div>
       <span class="chip-name">${escHtml(p.name)}</span>
       <span class="chip-score">${playerTotal(p.id)}</span>
-    </div>`).join('');
+    </button>`).join('');
 
   const hasEvents = state.events.length > 0;
 
@@ -506,6 +507,12 @@ document.addEventListener('click', e => {
   // Scoreboard
   } else if (action === 'open-sheet') {
     openSheet();
+
+  } else if (action === 'open-sheet-for-player') {
+    openSheet();
+    sheet.playerIds = [parseInt(btn.dataset.playerId)];
+    sheet.step = 2;
+    renderSheet();
 
   } else if (action === 'undo') {
     const last = dispatch('UNDO');
