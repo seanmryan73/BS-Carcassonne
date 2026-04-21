@@ -583,7 +583,7 @@ document.addEventListener('touchmove', e => {
 let lastTap = 0;
 document.addEventListener('touchend', e => {
   const now = Date.now();
-  if (now - lastTap < 300) e.preventDefault();
+  if (now - lastTap < 500) e.preventDefault();
   lastTap = now;
 }, { passive: false });
 
