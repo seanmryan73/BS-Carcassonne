@@ -616,9 +616,9 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
 }
 
-// ── Fire Add Score on touchend to avoid iOS keyboard-dismiss layout shift ─────
+// ── Fire Add Score on touchstart to bypass iOS keyboard-dismiss layout shift ───
 
-document.addEventListener('touchend', e => {
+document.addEventListener('touchstart', e => {
   const btn = e.target.closest('[data-action="add-score"]');
   if (!btn) return;
   e.preventDefault();
