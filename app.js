@@ -669,57 +669,98 @@ document.addEventListener('touchend', e => {
 
 // ── Dice overlay ─────────────────────────────────────────────────────────────
 
+const PIP_PATTERNS = {
+  1: [4],
+  2: [2, 6],
+  3: [2, 4, 6],
+};
+
+function updatePips(face, val) {
+  const pips = face.querySelectorAll('.pip');
+  const active = new Set(PIP_PATTERNS[val]);
+  pips.forEach((pip, i) => {
+    pip.classList.toggle('show', active.has(i));
+  });
+}
+
 let diceSpinTimer = null;
 
-function spinDice(onLand) {
-  const el = document.getElementById('dice-number');
+function flipTo(val, duration, cb) {
+  const face = document.getElementById('dice-face');
+  if (!face) return;
+  face.classList.remove('flip-out', 'flip-in', 'landing', 'glowing');
+  void face.offsetWidth;
+  face.classList.add('flip-out');
+  setTimeout(() => {
+    updatePips(face, val);
+    face.classList.remove('flip-out');
+    void face.offsetWidth;
+    face.classList.add('flip-in');
+    setTimeout(() => {
+      face.classList.remove('flip-in');
+      if (cb) cb();
+    }, duration);
+  }, duration);
+}
+
+function landOn(val) {
+  const face = document.getElementById('dice-face');
+  if (!face) return;
+  face.classList.remove('flip-out', 'flip-in', 'landing', 'glowing');
+  updatePips(face, val);
+  void face.offsetWidth;
+  face.classList.add('landing');
+  setTimeout(() => {
+    face.classList.remove('landing');
+    face.classList.add('glowing');
+  }, 560);
+}
+
+function spinDice() {
+  clearTimeout(diceSpinTimer);
+  const face = document.getElementById('dice-face');
+  if (!face) return;
+  face.classList.remove('glowing', 'landing', 'flip-out', 'flip-in');
   let spins = 0;
-  const totalSpins = 14;
-  clearInterval(diceSpinTimer);
+  const totalSpins = 16;
 
   function tick() {
     spins++;
-    const val = Math.floor(Math.random() * 3) + 1;
-    el.classList.remove('pop', 'land');
-    void el.offsetWidth;
-    el.textContent = val;
-    el.classList.add('pop');
-
     const progress = spins / totalSpins;
-    const delay = 60 + Math.pow(progress, 2) * 340;
+    const interDelay = 55 + Math.pow(progress, 2.8) * 500;
+    const flipDur = Math.min(Math.floor(interDelay * 0.38), 110);
+    const val = Math.floor(Math.random() * 3) + 1;
 
     if (spins >= totalSpins) {
-      clearInterval(diceSpinTimer);
       const result = Math.floor(Math.random() * 3) + 1;
-      setTimeout(() => {
-        el.classList.remove('pop', 'land');
-        void el.offsetWidth;
-        el.textContent = result;
-        el.classList.add('land');
-        if (onLand) onLand(result);
-      }, delay);
+      flipTo(val, flipDur, () => {
+        setTimeout(() => landOn(result), 80);
+      });
       return;
     }
-    diceSpinTimer = setTimeout(tick, delay);
+
+    flipTo(val, flipDur, () => {
+      diceSpinTimer = setTimeout(tick, Math.max(interDelay - flipDur * 2, 10));
+    });
   }
 
-  diceSpinTimer = setTimeout(tick, 60);
+  tick();
 }
 
 function openDiceOverlay() {
   const overlay = document.getElementById('dice-overlay');
-  const numEl = document.getElementById('dice-number');
-  numEl.textContent = '🎲';
-  numEl.className = 'dice-number';
+  const face = document.getElementById('dice-face');
+  face.classList.remove('glowing', 'landing', 'flip-out', 'flip-in');
+  updatePips(face, 1);
   overlay.classList.remove('hidden', 'fading');
-  spinDice();
+  setTimeout(() => spinDice(), 120);
 }
 
 function closeDiceOverlay() {
-  clearInterval(diceSpinTimer);
+  clearTimeout(diceSpinTimer);
   const overlay = document.getElementById('dice-overlay');
   overlay.classList.add('fading');
-  setTimeout(() => overlay.classList.add('hidden'), 260);
+  setTimeout(() => overlay.classList.add('hidden'), 300);
 }
 
 document.getElementById('dice-roll-again').addEventListener('click', () => spinDice());
