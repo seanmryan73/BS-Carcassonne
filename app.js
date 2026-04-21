@@ -425,9 +425,22 @@ function openSheet() {
 }
 
 function closeSheet() {
-  document.getElementById('sheet').classList.remove('open');
+  const el = document.getElementById('sheet');
+  el.classList.remove('open');
+  el.style.bottom = '';
   document.getElementById('sheet-backdrop').classList.add('hidden');
   sheet.open = false;
+}
+
+// ── Push sheet above keyboard on iOS ─────────────────────────────────────────
+
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', () => {
+    if (!sheet.open) return;
+    const keyboardHeight = window.innerHeight - window.visualViewport.height - window.visualViewport.offsetTop;
+    const el = document.getElementById('sheet');
+    if (el) el.style.bottom = keyboardHeight > 0 ? `${keyboardHeight}px` : '';
+  });
 }
 
 // ── Toast ─────────────────────────────────────────────────────────────────────
