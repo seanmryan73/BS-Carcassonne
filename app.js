@@ -166,14 +166,16 @@ function renderSetup() {
         <h1 class="app-title">TillyTally</h1>
         <p class="app-subtitle">Unofficial Scoring for Carcassonne</p>
       </div>
-      <div class="setup-form">
-        <div class="field-row">
-          <span class="field-label">Players</span>
-          <div class="count-buttons">${countBtns}</div>
+      <div class="setup-card">
+        <div class="setup-form">
+          <div class="field-row">
+            <span class="field-label">Players</span>
+            <div class="count-buttons">${countBtns}</div>
+          </div>
+          <div class="player-list">${rows}</div>
+          <button class="btn-dice-roll" data-action="roll-dice">🎲 Dice Roll</button>
+          <button class="btn-primary" data-action="start-game">Start Game</button>
         </div>
-        <div class="player-list">${rows}</div>
-        <button class="btn-dice-roll" data-action="roll-dice">🎲 Dice Roll</button>
-        <button class="btn-primary" data-action="start-game">Start Game</button>
       </div>
     </div>`;
 }
