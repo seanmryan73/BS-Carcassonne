@@ -171,30 +171,44 @@ input  { font-family: inherit; font-size: inherit; }
   flex-shrink: 0;
 }
 
-.score-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.score-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
 
-.score-chip {
+.score-card {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  gap: 2px;
   background: var(--bg);
-  border-radius: 20px;
-  padding: 6px 12px 6px 8px;
-  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 6px;
+  border: 2px solid var(--player-color);
   cursor: pointer;
   font-family: inherit;
+  min-width: 0;
 }
-.score-chip:active { background: var(--surface); border-color: var(--primary); }
+.score-card:active { background: var(--surface); opacity: 0.8; }
 
-.chip-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--player-color);
-  flex-shrink: 0;
+.card-name  {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  text-align: center;
 }
-.chip-name  { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
-.chip-score { font-size: 1rem; font-weight: 700; }
+.card-score {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--player-color);
+  line-height: 1;
+}
 
 .header-actions {
   display: flex;

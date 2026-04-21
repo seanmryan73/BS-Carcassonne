@@ -180,12 +180,12 @@ function renderSetup() {
 // ── Render: scoreboard ────────────────────────────────────────────────────────
 
 function renderScoreboard() {
-  const chips = state.players.map(p => `
-    <button type="button" class="score-chip" style="--player-color:${p.color}"
+  const sorted = [...state.players].sort((a, b) => playerTotal(b.id) - playerTotal(a.id));
+  const cards = sorted.map(p => `
+    <button type="button" class="score-card" style="--player-color:${p.color}"
             data-action="open-sheet-for-player" data-player-id="${p.id}">
-      <div class="chip-dot"></div>
-      <span class="chip-name">${escHtml(p.name)}</span>
-      <span class="chip-score">${playerTotal(p.id)}</span>
+      <span class="card-name">${escHtml(p.name)}</span>
+      <span class="card-score">${playerTotal(p.id)}</span>
     </button>`).join('');
 
   const hasEvents = state.events.length > 0;
@@ -204,13 +204,13 @@ function renderScoreboard() {
   }).join('');
 
   const empty = !hasEvents
-    ? `<div class="empty-log"><p>No scores yet.</p><p>Tap + to log an event.</p></div>`
+    ? `<div class="empty-log"><p>No scores yet.</p><p>Tap a name to log a score.</p></div>`
     : '';
 
   return `
     <div class="screen scoreboard-screen">
       <header class="score-header">
-        <div class="score-chips">${chips}</div>
+        <div class="score-grid">${cards}</div>
         <div class="header-actions">
           <button class="btn-icon" data-action="undo" ${!hasEvents ? 'disabled' : ''}>↩</button>
           <button class="btn-text" data-action="end-game">End Game</button>
