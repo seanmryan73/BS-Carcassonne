@@ -533,11 +533,20 @@ input  { font-family: inherit; font-size: inherit; }
 }
 .stepper-btn:disabled { opacity: 0.28; }
 .stepper-val {
-  min-width: 40px;
+  min-width: 48px;
+  width: 48px;
   text-align: center;
   font-size: 1.15rem;
   font-weight: 700;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  padding: 6px 2px;
+  -moz-appearance: textfield;
 }
+.stepper-val::-webkit-inner-spin-button,
+.stepper-val::-webkit-outer-spin-button { -webkit-appearance: none; }
 
 .score-preview-bar {
   display: flex;

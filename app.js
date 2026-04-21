@@ -268,7 +268,8 @@ function stepper(action, value, min = 0, max = 99) {
   return `
     <div class="stepper">
       <button type="button" class="stepper-btn" data-action="${action}-dec" ${value <= min ? 'disabled' : ''}>−</button>
-      <span class="stepper-val">${value}</span>
+      <input type="number" class="stepper-val" data-action="${action}-input"
+        value="${value}" min="${min}" max="${max}" inputmode="numeric" pattern="[0-9]*">
       <button type="button" class="stepper-btn" data-action="${action}-inc" ${value >= max ? 'disabled' : ''}>+</button>
     </div>`;
 }
@@ -563,6 +564,23 @@ document.addEventListener('click', e => {
 document.addEventListener('input', e => {
   const input = e.target.closest('[data-action="set-name"]');
   if (input) setupPlayers[parseInt(input.dataset.idx)].name = input.value;
+});
+
+// Stepper direct input
+document.addEventListener('change', e => {
+  const input = e.target.closest('[data-action$="-input"]');
+  if (!input) return;
+  const action = input.dataset.action.replace('-input', '');
+  const min = parseInt(input.min);
+  const max = parseInt(input.max);
+  let val = parseInt(input.value);
+  if (isNaN(val)) val = min;
+  val = Math.min(max, Math.max(min, val));
+  const fieldMap = { tiles: 'tiles', pennants: 'pennants', surrounding: 'surrounding', cities: 'cities', points: 'points' };
+  if (action in fieldMap) {
+    sheet.details[fieldMap[action]] = val;
+    renderSheet();
+  }
 });
 
 // Close sheet on backdrop tap
