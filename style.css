@@ -452,6 +452,7 @@ input  { font-family: inherit; font-size: inherit; }
   transition: border-color 0.15s, background 0.15s;
 }
 .type-btn:active { background: var(--surface); border-color: var(--primary); }
+.type-btn-last { border-style: dashed; border-color: var(--primary-light); }
 .type-icon { font-size: 1.6rem; line-height: 1; }
 
 /* Step 3 — details */

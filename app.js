@@ -315,6 +315,14 @@ function renderSheetStep2() {
       <span class="type-label">${t.label}</span>
     </button>`).join('');
 
+  const last = state.events.length ? state.events[state.events.length - 1] : null;
+  const icons = { city: '🏰', road: '🛣️', monastery: '⛪', farm: '🌾', 'pig-farm': '🐷', other: '✏️' };
+  const lastBtn = last ? `
+    <button type="button" class="type-btn type-btn-last" data-action="select-type-last">
+      <span class="type-icon">${icons[last.type]}</span>
+      <span class="type-label">Same as Last</span>
+    </button>` : '';
+
   return `
     <div class="sheet-handle"></div>
     <div class="sheet-header">
@@ -322,7 +330,7 @@ function renderSheetStep2() {
       <h2 class="sheet-title">Feature type</h2>
       <button type="button" class="btn-sheet-close" data-action="close-sheet">✕</button>
     </div>
-    <div class="type-grid">${btns}</div>`;
+    <div class="type-grid">${btns}${lastBtn}</div>`;
 }
 
 function renderSheetStep3() {
@@ -530,6 +538,15 @@ document.addEventListener('click', e => {
     sheet.type = btn.dataset.type;
     sheet.step = 3;
     renderSheet();
+
+  } else if (action === 'select-type-last') {
+    const last = state.events[state.events.length - 1];
+    if (last) {
+      sheet.type = last.type;
+      sheet.details = { ...last.details };
+      sheet.step = 3;
+      renderSheet();
+    }
 
   // Steppers
   } else if (action === 'tiles-dec')       { sheet.details.tiles = Math.max(1, sheet.details.tiles - 1); renderSheet(); }
