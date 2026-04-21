@@ -20,7 +20,7 @@ let sheet = {
   step: 1,
   playerIds: [],
   type: null,
-  details: { tiles: 1, pennants: 0, complete: true, cathedral: false, inn: false, surrounding: 0, cities: 1, points: 0 }
+  details: { tiles: 2, pennants: 0, complete: true, cathedral: false, inn: false, surrounding: 0, cities: 1, points: 0 }
 };
 
 // ── Persistence ───────────────────────────────────────────────────────────────
@@ -408,7 +408,7 @@ function render() {
 function openSheet() {
   sheet = {
     open: true, step: 1, playerIds: [], type: null,
-    details: { tiles: 1, pennants: 0, complete: true, cathedral: false, inn: false, surrounding: 0, cities: 1, points: 0 }
+    details: { tiles: 2, pennants: 0, complete: true, cathedral: false, inn: false, surrounding: 0, cities: 1, points: 0 }
   };
   renderSheet();
   document.getElementById('sheet-backdrop').classList.remove('hidden');
