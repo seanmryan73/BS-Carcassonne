@@ -230,16 +230,17 @@ function renderEnded() {
   const topScore = playerTotal(ranked[0].id);
   const winners = ranked.filter(p => playerTotal(p.id) === topScore);
   const isTie = winners.length > 1;
-  const winnerText = isTie
-    ? `${winners.map(p => escHtml(p.name)).join(' & ')} tie! 🎉`
-    : `${escHtml(ranked[0].name)} wins! 🎉`;
+  const winnerLabel = isTie
+    ? winners.map(p => escHtml(p.name)).join(' & ')
+    : escHtml(ranked[0].name);
   const medals = ['🥇', '🥈', '🥉'];
 
-  const cards = ranked.map((p, i) => {
+  const rows = ranked.map((p, i) => {
     const total = playerTotal(p.id);
     const prevTotal = i > 0 ? playerTotal(ranked[i - 1].id) : null;
     const displayRank = prevTotal === total ? null : i;
     const medal = displayRank !== null ? (medals[displayRank] ?? `${displayRank + 1}.`) : '🥇';
+    const isWinner = total === topScore;
     const pEvents = state.events.filter(e => e.playerIds.includes(p.id));
     const breakdown = pEvents.map(e => `
       <div class="breakdown-item">
@@ -247,9 +248,8 @@ function renderEnded() {
         <span>+${e.points}</span>
       </div>`).join('');
 
-    const isWinner = playerTotal(p.id) === topScore;
     return `
-      <div class="ranking-card ${isWinner ? 'winner' : ''}" style="--player-color:${p.color}">
+      <div class="ranking-card ${isWinner ? 'winner' : ''}" style="--player-color:${p.color}" style="animation-delay:${i * 0.12}s">
         <div class="ranking-header">
           <span class="ranking-medal">${medal}</span>
           <div class="ranking-dot"></div>
@@ -262,13 +262,19 @@ function renderEnded() {
 
   return `
     <div class="screen ended-screen">
-      <header class="ended-header">
-        <h1>Game Over</h1>
-        <p class="winner-text">${winnerText}</p>
-      </header>
-      <div class="rankings">${cards}</div>
-      <div class="ended-footer">
-        <button class="btn-primary" data-action="new-game">New Game</button>
+      <div class="ended-hero">
+        <canvas id="confetti-canvas"></canvas>
+        <div class="ended-hero-content">
+          <p class="ended-game-over">Game Over</p>
+          <p class="ended-winner-name">${winnerLabel}</p>
+          <p class="ended-winner-sub">${isTie ? 'It\'s a tie! 🎉' : 'wins! 🎉'}</p>
+        </div>
+      </div>
+      <div class="ended-rankings">
+        <div class="rankings">${rows}</div>
+        <div class="ended-footer">
+          <button class="btn-primary" data-action="new-game">New Game</button>
+        </div>
       </div>
     </div>`;
 }
@@ -419,7 +425,7 @@ function render() {
   const app = document.getElementById('app');
   if (state.phase === 'setup')   app.innerHTML = renderSetup();
   else if (state.phase === 'playing') app.innerHTML = renderScoreboard();
-  else if (state.phase === 'ended')   app.innerHTML = renderEnded();
+  else if (state.phase === 'ended') { app.innerHTML = renderEnded(); startConfetti(); }
 }
 
 // ── Sheet open/close ──────────────────────────────────────────────────────────
@@ -774,6 +780,55 @@ function closeDiceOverlay() {
 
 document.getElementById('dice-roll-again').addEventListener('click', () => spinDice());
 document.getElementById('dice-done').addEventListener('click', () => closeDiceOverlay());
+
+// ── Confetti ──────────────────────────────────────────────────────────────────
+
+let confettiRaf = null;
+
+function startConfetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth;
+  canvas.height = canvas.offsetHeight;
+
+  const COLORS = ['#e91e8c','#2980b9','#f39c12','#27ae60','#c0392b','#9b59b6','#ffffff'];
+  const pieces = Array.from({ length: 90 }, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * -canvas.height,
+    w: 7 + Math.random() * 7,
+    h: 4 + Math.random() * 4,
+    color: COLORS[Math.floor(Math.random() * COLORS.length)],
+    rot: Math.random() * Math.PI * 2,
+    vx: (Math.random() - 0.5) * 2.5,
+    vy: 2.5 + Math.random() * 3,
+    vr: (Math.random() - 0.5) * 0.15,
+  }));
+
+  cancelAnimationFrame(confettiRaf);
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pieces.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.rot += p.vr;
+      if (p.y > canvas.height) {
+        p.y = -p.h;
+        p.x = Math.random() * canvas.width;
+      }
+      ctx.save();
+      ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
+      ctx.rotate(p.rot);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    });
+    confettiRaf = requestAnimationFrame(draw);
+  }
+
+  draw();
+}
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
 
