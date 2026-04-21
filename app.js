@@ -398,9 +398,9 @@ function renderSheetStep3() {
 function renderSheet() {
   const el = document.getElementById('sheet');
   if (!el) return;
-  if (sheet.step === 1) el.innerHTML = renderSheetStep1();
-  else if (sheet.step === 2) el.innerHTML = renderSheetStep2();
-  else if (sheet.step === 3) el.innerHTML = renderSheetStep3();
+  if (sheet.step === 1) { el.classList.remove('sheet-fullscreen'); el.innerHTML = renderSheetStep1(); }
+  else if (sheet.step === 2) { el.classList.remove('sheet-fullscreen'); el.innerHTML = renderSheetStep2(); }
+  else if (sheet.step === 3) { el.classList.add('sheet-fullscreen'); el.innerHTML = renderSheetStep3(); }
 }
 
 // ── Main render ───────────────────────────────────────────────────────────────
@@ -426,21 +426,9 @@ function openSheet() {
 
 function closeSheet() {
   const el = document.getElementById('sheet');
-  el.classList.remove('open');
-  el.style.bottom = '';
+  el.classList.remove('open', 'sheet-fullscreen');
   document.getElementById('sheet-backdrop').classList.add('hidden');
   sheet.open = false;
-}
-
-// ── Push sheet above keyboard on iOS ─────────────────────────────────────────
-
-if (window.visualViewport) {
-  window.visualViewport.addEventListener('resize', () => {
-    if (!sheet.open) return;
-    const keyboardHeight = window.innerHeight - window.visualViewport.height - window.visualViewport.offsetTop;
-    const el = document.getElementById('sheet');
-    if (el) el.style.bottom = keyboardHeight > 0 ? `${keyboardHeight}px` : '';
-  });
 }
 
 // ── Toast ─────────────────────────────────────────────────────────────────────

@@ -347,7 +347,7 @@ input  { font-family: inherit; font-size: inherit; }
   right: 0;
   background: var(--surface);
   border-radius: 24px 24px 0 0;
-  padding: 0 20px 0;
+  padding: 0 20px;
   z-index: 101;
   max-height: 90dvh;
   overflow-y: auto;
@@ -357,6 +357,7 @@ input  { font-family: inherit; font-size: inherit; }
   will-change: transform;
 }
 #sheet.open { transform: translateY(0); }
+#sheet.sheet-fullscreen { max-height: 100dvh; border-radius: 0; }
 
 .sheet-handle {
   width: 36px;
