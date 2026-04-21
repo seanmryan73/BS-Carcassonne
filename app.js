@@ -574,6 +574,19 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
 }
 
+// ── Disable pinch-to-zoom and double-tap zoom on iOS ──────────────────────────
+
+document.addEventListener('touchmove', e => {
+  if (e.touches.length > 1) e.preventDefault();
+}, { passive: false });
+
+let lastTap = 0;
+document.addEventListener('touchend', e => {
+  const now = Date.now();
+  if (now - lastTap < 300) e.preventDefault();
+  lastTap = now;
+}, { passive: false });
+
 // ── Boot ──────────────────────────────────────────────────────────────────────
 
 loadState();
