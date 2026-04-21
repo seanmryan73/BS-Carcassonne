@@ -388,7 +388,7 @@ input  { font-family: inherit; font-size: inherit; }
   box-shadow: 0 1px 4px var(--shadow);
   border-left: 4px solid var(--player-color);
 }
-.ranking-card.winner { animation: rainbow-glow 2s linear infinite; }
+.ranking-card.winner { box-shadow: 0 2px 12px var(--shadow); }
 
 .ranking-header {
   display: flex;
