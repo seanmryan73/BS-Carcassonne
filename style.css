@@ -168,13 +168,16 @@ input  { font-family: inherit; font-size: inherit; }
   display: flex;
   flex-direction: column;
   gap: 10px;
-  flex-shrink: 0;
+  flex: 0 0 50%;
+  min-height: 0;
 }
 
 .score-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
+  flex: 1;
+  min-height: 0;
 }
 
 .score-card {
@@ -182,19 +185,20 @@ input  { font-family: inherit; font-size: inherit; }
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
+  gap: 4px;
   background: var(--bg);
-  border-radius: 12px;
-  padding: 10px 6px;
-  border: 2px solid var(--player-color);
+  border-radius: 14px;
+  padding: 8px 6px;
+  border: 2.5px solid var(--player-color);
   cursor: pointer;
   font-family: inherit;
   min-width: 0;
+  min-height: 0;
 }
 .score-card:active { background: var(--surface); opacity: 0.8; }
 
-.card-name  {
-  font-size: 0.85rem;
+.card-name {
+  font-size: 1rem;
   font-weight: 600;
   color: var(--text-muted);
   white-space: nowrap;
@@ -204,7 +208,7 @@ input  { font-family: inherit; font-size: inherit; }
   text-align: center;
 }
 .card-score {
-  font-size: 1.8rem;
+  font-size: 2.6rem;
   font-weight: 800;
   color: var(--player-color);
   line-height: 1;
