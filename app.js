@@ -702,42 +702,59 @@ function updatePips(face, val) {
 
 let diceSpinTimer = null;
 
+const AXES = [
+  // [outTransform, inTransform]
+  ['rotateX(-90deg) scale(1.3) translateY(-18px)', 'rotateX(90deg)  scale(1.3) translateY(-18px)'],
+  ['rotateY(90deg)  scale(1.3) translateY(-18px)', 'rotateY(-90deg) scale(1.3) translateY(-18px)'],
+  ['rotateX(-60deg) rotateY(60deg)  scale(1.3) translateY(-18px)', 'rotateX(60deg) rotateY(-60deg) scale(1.3) translateY(-18px)'],
+  ['rotateX(-60deg) rotateY(-60deg) scale(1.3) translateY(-18px)', 'rotateX(60deg) rotateY(60deg)  scale(1.3) translateY(-18px)'],
+];
+const REST = 'rotateX(0deg) rotateY(0deg) scale(1) translateY(0px)';
+
 function flipTo(val, duration, cb) {
   const face = document.getElementById('dice-face');
   if (!face) return;
-  face.classList.remove('flip-out', 'flip-in', 'landing', 'glowing');
-  void face.offsetWidth;
-  face.classList.add('flip-out');
+  const [outT, inT] = AXES[Math.floor(Math.random() * AXES.length)];
+  face.style.transition = `transform ${duration}ms ease-in`;
+  face.style.transform = outT;
   setTimeout(() => {
     updatePips(face, val);
-    face.classList.remove('flip-out');
-    void face.offsetWidth;
-    face.classList.add('flip-in');
-    setTimeout(() => {
-      face.classList.remove('flip-in');
-      if (cb) cb();
-    }, duration);
+    face.style.transition = 'none';
+    face.style.transform = inT;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      face.style.transition = `transform ${duration}ms cubic-bezier(0.34,1.56,0.64,1)`;
+      face.style.transform = REST;
+      setTimeout(() => { if (cb) cb(); }, duration);
+    }));
   }, duration);
 }
 
 function landOn(val) {
   const face = document.getElementById('dice-face');
+  const scene = document.querySelector('.dice-scene');
   if (!face) return;
-  face.classList.remove('flip-out', 'flip-in', 'landing', 'glowing');
+  face.style.transition = 'none';
+  face.style.transform = 'rotateX(-180deg) scale(0.3) translateY(-40px)';
+  face.classList.remove('glowing', 'landing');
   updatePips(face, val);
-  void face.offsetWidth;
-  face.classList.add('landing');
-  setTimeout(() => {
-    face.classList.remove('landing');
-    face.classList.add('glowing');
-  }, 560);
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    face.style.transition = 'none';
+    face.classList.add('landing');
+    setTimeout(() => {
+      face.classList.remove('landing');
+      face.classList.add('glowing');
+      if (scene) { scene.classList.add('shake'); setTimeout(() => scene.classList.remove('shake'), 500); }
+    }, 560);
+  }));
 }
 
 function spinDice() {
   clearTimeout(diceSpinTimer);
   const face = document.getElementById('dice-face');
   if (!face) return;
-  face.classList.remove('glowing', 'landing', 'flip-out', 'flip-in');
+  face.style.transition = 'none';
+  face.style.transform = REST;
+  face.classList.remove('glowing', 'landing');
   let spins = 0;
   const totalSpins = 16;
 
