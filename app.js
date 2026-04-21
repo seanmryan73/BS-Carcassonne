@@ -616,6 +616,15 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
 }
 
+// ── Dismiss keyboard on button tap so first tap always registers ──────────────
+
+document.addEventListener('touchstart', e => {
+  const btn = e.target.closest('button, [data-action]');
+  if (btn && document.activeElement && document.activeElement !== btn) {
+    document.activeElement.blur();
+  }
+}, { passive: true });
+
 // ── Disable pinch-to-zoom and double-tap zoom on iOS ──────────────────────────
 
 document.addEventListener('touchmove', e => {
