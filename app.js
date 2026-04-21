@@ -269,7 +269,7 @@ function stepper(action, value, min = 0, max = 99) {
     <div class="stepper">
       <button type="button" class="stepper-btn" data-action="${action}-dec" ${value <= min ? 'disabled' : ''}>−</button>
       <input type="number" class="stepper-val" data-action="${action}-input"
-        value="${value}" min="${min}" max="${max}" inputmode="numeric" pattern="[0-9]*">
+        placeholder="${value}" min="${min}" max="${max}" inputmode="numeric" pattern="[0-9]*">
       <button type="button" class="stepper-btn" data-action="${action}-inc" ${value >= max ? 'disabled' : ''}>+</button>
     </div>`;
 }
@@ -578,7 +578,7 @@ document.addEventListener('change', e => {
   val = Math.min(max, Math.max(min, val));
   const fieldMap = { tiles: 'tiles', pennants: 'pennants', surrounding: 'surrounding', cities: 'cities', points: 'points' };
   if (action in fieldMap) {
-    sheet.details[fieldMap[action]] = val;
+    if (!isNaN(val)) sheet.details[fieldMap[action]] = val;
     renderSheet();
   }
 });

@@ -547,6 +547,7 @@ input  { font-family: inherit; font-size: inherit; }
 }
 .stepper-val::-webkit-inner-spin-button,
 .stepper-val::-webkit-outer-spin-button { -webkit-appearance: none; }
+.stepper-val::placeholder { color: var(--text-muted); }
 
 .score-preview-bar {
   display: flex;
