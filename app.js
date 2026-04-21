@@ -172,6 +172,7 @@ function renderSetup() {
           <div class="count-buttons">${countBtns}</div>
         </div>
         <div class="player-list">${rows}</div>
+        <button class="btn-dice-roll" data-action="roll-dice">🎲 Dice Roll</button>
         <button class="btn-primary" data-action="start-game">Start Game</button>
       </div>
     </div>`;

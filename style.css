@@ -160,6 +160,22 @@ input  { font-family: inherit; font-size: inherit; }
 .btn-primary:active { background: var(--primary-light); }
 .btn-primary:disabled { opacity: 0.4; }
 
+.btn-dice-roll {
+  width: 100%;
+  padding: 14px;
+  background: none;
+  color: var(--primary);
+  border: 2px solid var(--primary);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: inherit;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.btn-dice-roll:active { background: var(--primary); color: white; }
+
 /* ── Scoreboard screen ────────────────────────────────────── */
 .score-header {
   background: var(--surface);
