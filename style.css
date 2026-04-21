@@ -706,21 +706,17 @@ input  { font-family: inherit; font-size: inherit; }
 }
 .dice-face.landing { animation: dice-land 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
 
-/* glow */
-@keyframes glow-pulse {
-  0%, 100% {
-    box-shadow: 0 16px 48px rgba(0,0,0,0.5),
-                0 0 40px rgba(255,190,30,0.7),
-                0 0 80px rgba(255,190,30,0.4);
-  }
-  50% {
-    box-shadow: 0 16px 48px rgba(0,0,0,0.5),
-                0 0 70px rgba(255,190,30,1),
-                0 0 130px rgba(255,190,30,0.7),
-                0 0 200px rgba(255,190,30,0.3);
-  }
+/* rainbow glow */
+@keyframes rainbow-glow {
+  0%   { box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 0 60px 10px hsl(0,100%,55%),   0 0 120px 30px hsl(0,100%,45%),   0 0 220px 60px hsl(0,100%,35%); }
+  17%  { box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 0 60px 10px hsl(60,100%,55%),  0 0 120px 30px hsl(60,100%,45%),  0 0 220px 60px hsl(60,100%,35%); }
+  33%  { box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 0 60px 10px hsl(120,100%,45%), 0 0 120px 30px hsl(120,100%,35%), 0 0 220px 60px hsl(120,100%,25%); }
+  50%  { box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 0 60px 10px hsl(200,100%,55%), 0 0 120px 30px hsl(200,100%,45%), 0 0 220px 60px hsl(200,100%,35%); }
+  67%  { box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 0 60px 10px hsl(270,100%,65%), 0 0 120px 30px hsl(270,100%,50%), 0 0 220px 60px hsl(270,100%,35%); }
+  83%  { box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 0 60px 10px hsl(320,100%,60%), 0 0 120px 30px hsl(320,100%,45%), 0 0 220px 60px hsl(320,100%,30%); }
+  100% { box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 0 60px 10px hsl(0,100%,55%),   0 0 120px 30px hsl(0,100%,45%),   0 0 220px 60px hsl(0,100%,35%); }
 }
-.dice-face.glowing { animation: glow-pulse 1.6s ease-in-out infinite; }
+.dice-face.glowing { animation: rainbow-glow 2s linear infinite; }
 
 .dice-actions {
   display: flex;
