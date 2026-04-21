@@ -616,14 +616,28 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
 }
 
-// ── Dismiss keyboard on button tap so first tap always registers ──────────────
+// ── Fire Add Score on touchend to avoid iOS keyboard-dismiss layout shift ─────
 
-document.addEventListener('touchstart', e => {
-  const btn = e.target.closest('button, [data-action]');
-  if (btn && document.activeElement && document.activeElement !== btn) {
-    document.activeElement.blur();
+document.addEventListener('touchend', e => {
+  const btn = e.target.closest('[data-action="add-score"]');
+  if (!btn) return;
+  e.preventDefault();
+  // Sync any open stepper input before submitting
+  const active = document.activeElement;
+  if (active && active.dataset.action?.endsWith('-input')) {
+    const action = active.dataset.action.replace('-input', '');
+    const val = parseInt(active.value);
+    const min = parseInt(active.min);
+    const max = parseInt(active.max);
+    if (!isNaN(val)) sheet.details[action] = Math.min(max, Math.max(min, val));
   }
-}, { passive: true });
+  active?.blur();
+  const pts = calcScore(sheet.type, sheet.details);
+  const names = sheet.playerIds.map(id => playerName(id)).join(' & ');
+  dispatch('ADD_EVENT', { playerIds: [...sheet.playerIds], type: sheet.type, points: pts, details: { ...sheet.details } });
+  closeSheet();
+  showToast(`${names} scored ${pts} pt${pts !== 1 ? 's' : ''}`);
+}, { passive: false });
 
 // ── Disable pinch-to-zoom and double-tap zoom on iOS ──────────────────────────
 
