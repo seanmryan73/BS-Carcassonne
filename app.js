@@ -227,12 +227,19 @@ function renderScoreboard() {
 
 function renderEnded() {
   const ranked = sortedPlayers();
-  const winner = ranked[0];
+  const topScore = playerTotal(ranked[0].id);
+  const winners = ranked.filter(p => playerTotal(p.id) === topScore);
+  const isTie = winners.length > 1;
+  const winnerText = isTie
+    ? `${winners.map(p => escHtml(p.name)).join(' & ')} tie! 🎉`
+    : `${escHtml(ranked[0].name)} wins! 🎉`;
   const medals = ['🥇', '🥈', '🥉'];
 
   const cards = ranked.map((p, i) => {
     const total = playerTotal(p.id);
-    const medal = medals[i] ?? `${i + 1}.`;
+    const prevTotal = i > 0 ? playerTotal(ranked[i - 1].id) : null;
+    const displayRank = prevTotal === total ? null : i;
+    const medal = displayRank !== null ? (medals[displayRank] ?? `${displayRank + 1}.`) : '🥇';
     const pEvents = state.events.filter(e => e.playerIds.includes(p.id));
     const breakdown = pEvents.map(e => `
       <div class="breakdown-item">
@@ -240,8 +247,9 @@ function renderEnded() {
         <span>+${e.points}</span>
       </div>`).join('');
 
+    const isWinner = playerTotal(p.id) === topScore;
     return `
-      <div class="ranking-card ${i === 0 ? 'winner' : ''}" style="--player-color:${p.color}">
+      <div class="ranking-card ${isWinner ? 'winner' : ''}" style="--player-color:${p.color}">
         <div class="ranking-header">
           <span class="ranking-medal">${medal}</span>
           <div class="ranking-dot"></div>
@@ -256,7 +264,7 @@ function renderEnded() {
     <div class="screen ended-screen">
       <header class="ended-header">
         <h1>Game Over</h1>
-        <p class="winner-text">${escHtml(winner.name)} wins! 🎉</p>
+        <p class="winner-text">${winnerText}</p>
       </header>
       <div class="rankings">${cards}</div>
       <div class="ended-footer">
