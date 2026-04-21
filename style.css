@@ -232,6 +232,8 @@ input  { font-family: inherit; font-size: inherit; }
   justify-content: center;
 }
 .btn-icon:disabled { opacity: 0.35; }
+.btn-roll { font-size: 22px; }
+.btn-roll-result { font-size: 1.3rem; font-weight: 800; background: var(--primary); color: white; border-color: var(--primary); }
 
 .btn-text {
   background: none;

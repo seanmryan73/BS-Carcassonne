@@ -213,6 +213,7 @@ function renderScoreboard() {
         <div class="score-grid">${cards}</div>
         <div class="header-actions">
           <button class="btn-icon" data-action="undo" ${!hasEvents ? 'disabled' : ''}>↩</button>
+          <button class="btn-icon btn-roll" data-action="roll-dice" id="roll-btn">🎲</button>
           <button class="btn-text" data-action="end-game">End Game</button>
         </div>
       </header>
@@ -524,6 +525,12 @@ document.addEventListener('click', e => {
     sheet.playerIds = [parseInt(btn.dataset.playerId)];
     sheet.step = 2;
     renderSheet();
+
+  } else if (action === 'roll-dice') {
+    const result = Math.floor(Math.random() * 3) + 1;
+    btn.textContent = result;
+    btn.classList.add('btn-roll-result');
+    setTimeout(() => { btn.textContent = '🎲'; btn.classList.remove('btn-roll-result'); }, 1500);
 
   } else if (action === 'undo') {
     const last = dispatch('UNDO');
