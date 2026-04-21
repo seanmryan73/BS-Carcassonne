@@ -686,108 +686,85 @@ document.addEventListener('touchend', e => {
 
 // ── Dice overlay ─────────────────────────────────────────────────────────────
 
-const PIP_PATTERNS = {
-  1: [4],
-  2: [2, 6],
-  3: [2, 4, 6],
+// Which cube rotation brings each face (1,2,3) toward the viewer
+const FACE_TARGETS = {
+  1: { x: 0,   y: 0   },   // front face
+  2: { x: 0,   y: -90 },   // right face
+  3: { x: -90, y: 0   },   // top face
 };
 
-function updatePips(face, val) {
-  const pips = face.querySelectorAll('.pip');
-  const active = new Set(PIP_PATTERNS[val]);
-  pips.forEach((pip, i) => {
-    pip.classList.toggle('show', active.has(i));
-  });
-}
-
+let cubeRotX = 0;
+let cubeRotY = 0;
 let diceSpinTimer = null;
 
-const AXES = [
-  // [outTransform, inTransform]
-  ['rotateX(-90deg) scale(1.3) translateY(-18px)', 'rotateX(90deg)  scale(1.3) translateY(-18px)'],
-  ['rotateY(90deg)  scale(1.3) translateY(-18px)', 'rotateY(-90deg) scale(1.3) translateY(-18px)'],
-  ['rotateX(-60deg) rotateY(60deg)  scale(1.3) translateY(-18px)', 'rotateX(60deg) rotateY(-60deg) scale(1.3) translateY(-18px)'],
-  ['rotateX(-60deg) rotateY(-60deg) scale(1.3) translateY(-18px)', 'rotateX(60deg) rotateY(60deg)  scale(1.3) translateY(-18px)'],
-];
-const REST = 'rotateX(0deg) rotateY(0deg) scale(1) translateY(0px)';
-
-function flipTo(val, duration, cb) {
-  const face = document.getElementById('dice-face');
-  if (!face) return;
-  const [outT, inT] = AXES[Math.floor(Math.random() * AXES.length)];
-  face.style.transition = `transform ${duration}ms ease-in`;
-  face.style.transform = outT;
-  setTimeout(() => {
-    updatePips(face, val);
-    face.style.transition = 'none';
-    face.style.transform = inT;
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      face.style.transition = `transform ${duration}ms cubic-bezier(0.34,1.56,0.64,1)`;
-      face.style.transform = REST;
-      setTimeout(() => { if (cb) cb(); }, duration);
-    }));
-  }, duration);
-}
-
-function landOn(val) {
-  const face = document.getElementById('dice-face');
-  const scene = document.querySelector('.dice-scene');
-  if (!face) return;
-  face.style.transition = 'none';
-  face.style.transform = 'rotateX(-180deg) scale(0.3) translateY(-40px)';
-  face.classList.remove('glowing', 'landing');
-  updatePips(face, val);
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    face.style.transition = 'none';
-    face.classList.add('landing');
-    setTimeout(() => {
-      face.classList.remove('landing');
-      face.classList.add('glowing');
-      if (scene) { scene.classList.add('shake'); setTimeout(() => scene.classList.remove('shake'), 500); }
-    }, 560);
-  }));
+function setCube(x, y, transition = '') {
+  const cube = document.getElementById('dice-cube');
+  if (!cube) return;
+  cube.style.transition = transition;
+  cube.style.transform = `rotateX(${x}deg) rotateY(${y}deg)`;
+  cubeRotX = x;
+  cubeRotY = y;
 }
 
 function spinDice() {
   clearTimeout(diceSpinTimer);
-  const face = document.getElementById('dice-face');
-  if (!face) return;
-  face.style.transition = 'none';
-  face.style.transform = REST;
-  face.classList.remove('glowing', 'landing');
+  const wrapper = document.getElementById('dice-cube-wrapper');
+  if (wrapper) wrapper.classList.remove('glowing');
   let spins = 0;
-  const totalSpins = 16;
+  const totalSpins = 18;
 
   function tick() {
     spins++;
     const progress = spins / totalSpins;
-    const interDelay = 55 + Math.pow(progress, 2.8) * 500;
-    const flipDur = Math.min(Math.floor(interDelay * 0.38), 110);
-    const val = Math.floor(Math.random() * 3) + 1;
+    const interDelay = 55 + Math.pow(progress, 2.6) * 520;
+    const transDur = Math.round(interDelay * (progress < 0.4 ? 1.15 : progress < 0.7 ? 0.85 : 0.6));
+
+    // Random rotation on X, Y, or both — always multiples of 90 so faces stay crisp
+    const amounts = [90, 180, 270];
+    const pick = () => (Math.random() > 0.5 ? 1 : -1) * amounts[Math.floor(Math.random() * amounts.length)];
+    const addX = Math.random() > 0.3 ? pick() : 0;
+    const addY = Math.random() > 0.3 ? pick() : 0;
+    const newX = cubeRotX + (addX === 0 && addY === 0 ? 90 : addX);
+    const newY = cubeRotY + addY;
+
+    const ease = progress > 0.65 ? 'cubic-bezier(0.25,0.46,0.45,0.94)' : 'ease-in-out';
+    setCube(newX, newY, `transform ${transDur}ms ${ease}`);
 
     if (spins >= totalSpins) {
-      const result = Math.floor(Math.random() * 3) + 1;
-      flipTo(val, flipDur, () => {
-        setTimeout(() => landOn(result), 80);
-      });
+      setTimeout(() => landCube(Math.floor(Math.random() * 3) + 1), interDelay + 60);
       return;
     }
-
-    flipTo(val, flipDur, () => {
-      diceSpinTimer = setTimeout(tick, Math.max(interDelay - flipDur * 2, 10));
-    });
+    diceSpinTimer = setTimeout(tick, interDelay);
   }
 
   tick();
 }
 
+function landCube(faceNum) {
+  const target = FACE_TARGETS[faceNum];
+  let targetX = Math.round(cubeRotX / 360) * 360 + target.x;
+  let targetY = Math.round(cubeRotY / 360) * 360 + target.y;
+  // Ensure the landing move is noticeable
+  if (Math.abs(targetX - cubeRotX) + Math.abs(targetY - cubeRotY) < 45) targetX += 360;
+
+  setCube(targetX, targetY, 'transform 0.7s cubic-bezier(0.34,1.56,0.64,1)');
+
+  setTimeout(() => {
+    const scene = document.querySelector('.dice-scene');
+    if (scene) { scene.classList.add('shake'); setTimeout(() => scene.classList.remove('shake'), 500); }
+    const wrapper = document.getElementById('dice-cube-wrapper');
+    if (wrapper) wrapper.classList.add('glowing');
+  }, 700);
+}
+
 function openDiceOverlay() {
   const overlay = document.getElementById('dice-overlay');
-  const face = document.getElementById('dice-face');
-  face.classList.remove('glowing', 'landing', 'flip-out', 'flip-in');
-  updatePips(face, 1);
+  const wrapper = document.getElementById('dice-cube-wrapper');
+  if (wrapper) wrapper.classList.remove('glowing');
+  cubeRotX = 0; cubeRotY = 0;
+  setCube(0, 0);
   overlay.classList.remove('hidden', 'fading');
-  setTimeout(() => spinDice(), 120);
+  setTimeout(() => spinDice(), 150);
 }
 
 function closeDiceOverlay() {

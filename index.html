@@ -24,10 +24,39 @@
   <div id="dice-overlay" class="dice-overlay hidden">
     <div class="dice-scene">
       <p class="dice-label">Roll</p>
-      <div class="dice-face" id="dice-face">
-        <div class="pip"></div><div class="pip"></div><div class="pip"></div>
-        <div class="pip"></div><div class="pip"></div><div class="pip"></div>
-        <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+      <div class="dice-cube-wrapper" id="dice-cube-wrapper">
+        <div class="dice-cube" id="dice-cube">
+          <div class="cube-face face-front"><!-- 1 -->
+            <div class="cpip"></div><div class="cpip"></div><div class="cpip"></div>
+            <div class="cpip"></div><div class="cpip show"></div><div class="cpip"></div>
+            <div class="cpip"></div><div class="cpip"></div><div class="cpip"></div>
+          </div>
+          <div class="cube-face face-back"><!-- 6 -->
+            <div class="cpip show"></div><div class="cpip"></div><div class="cpip show"></div>
+            <div class="cpip show"></div><div class="cpip"></div><div class="cpip show"></div>
+            <div class="cpip show"></div><div class="cpip"></div><div class="cpip show"></div>
+          </div>
+          <div class="cube-face face-right"><!-- 2 -->
+            <div class="cpip"></div><div class="cpip"></div><div class="cpip show"></div>
+            <div class="cpip"></div><div class="cpip"></div><div class="cpip"></div>
+            <div class="cpip show"></div><div class="cpip"></div><div class="cpip"></div>
+          </div>
+          <div class="cube-face face-left"><!-- 5 -->
+            <div class="cpip show"></div><div class="cpip"></div><div class="cpip show"></div>
+            <div class="cpip"></div><div class="cpip show"></div><div class="cpip"></div>
+            <div class="cpip show"></div><div class="cpip"></div><div class="cpip show"></div>
+          </div>
+          <div class="cube-face face-top"><!-- 3 -->
+            <div class="cpip"></div><div class="cpip"></div><div class="cpip show"></div>
+            <div class="cpip"></div><div class="cpip show"></div><div class="cpip"></div>
+            <div class="cpip show"></div><div class="cpip"></div><div class="cpip"></div>
+          </div>
+          <div class="cube-face face-bottom"><!-- 4 -->
+            <div class="cpip show"></div><div class="cpip"></div><div class="cpip show"></div>
+            <div class="cpip"></div><div class="cpip"></div><div class="cpip"></div>
+            <div class="cpip show"></div><div class="cpip"></div><div class="cpip show"></div>
+          </div>
+        </div>
       </div>
       <div class="dice-actions">
         <button class="btn-primary dice-roll-again" id="dice-roll-again">Roll Again</button>
