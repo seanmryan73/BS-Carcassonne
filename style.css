@@ -233,7 +233,6 @@ input  { font-family: inherit; font-size: inherit; }
 }
 .btn-icon:disabled { opacity: 0.35; }
 .btn-roll { font-size: 22px; }
-.btn-roll-result { font-size: 1.3rem; font-weight: 800; background: var(--primary); color: white; border-color: var(--primary); }
 
 .btn-text {
   background: none;
@@ -610,6 +609,86 @@ input  { font-family: inherit; font-size: inherit; }
   margin-top: 8px;
   margin-bottom: calc(16px + env(safe-area-inset-bottom));
 }
+
+/* ── Dice overlay ────────────────────────────────────────── */
+.dice-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0,0,0,0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  opacity: 1;
+  transition: opacity 0.25s;
+}
+.dice-overlay.hidden { display: none; }
+.dice-overlay.fading { opacity: 0; }
+
+.dice-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+}
+
+.dice-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.dice-number {
+  font-size: 9rem;
+  font-weight: 900;
+  color: white;
+  line-height: 1;
+  text-shadow: 0 0 60px rgba(255,255,255,0.4);
+  transition: transform 0.1s;
+  min-width: 1.1ch;
+  text-align: center;
+}
+.dice-number.pop {
+  animation: dice-pop 0.18s ease-out;
+}
+@keyframes dice-pop {
+  0%   { transform: scale(0.7); opacity: 0.4; }
+  60%  { transform: scale(1.15); }
+  100% { transform: scale(1);   opacity: 1; }
+}
+.dice-number.land {
+  animation: dice-land 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes dice-land {
+  0%   { transform: scale(0.5) rotate(-8deg); opacity: 0; }
+  100% { transform: scale(1)   rotate(0deg);  opacity: 1; }
+}
+
+.dice-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 220px;
+}
+.dice-roll-again {
+  font-size: 1.1rem;
+  letter-spacing: 0.03em;
+}
+.btn-dice-done {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.55);
+  font-size: 1rem;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 4px 12px;
+}
+.btn-dice-done:active { color: white; }
 
 /* ── Toast ────────────────────────────────────────────────── */
 #toast {

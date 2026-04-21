@@ -527,10 +527,7 @@ document.addEventListener('click', e => {
     renderSheet();
 
   } else if (action === 'roll-dice') {
-    const result = Math.floor(Math.random() * 3) + 1;
-    btn.textContent = result;
-    btn.classList.add('btn-roll-result');
-    setTimeout(() => { btn.textContent = '🎲'; btn.classList.remove('btn-roll-result'); }, 1500);
+    openDiceOverlay();
 
   } else if (action === 'undo') {
     const last = dispatch('UNDO');
@@ -669,6 +666,64 @@ document.addEventListener('touchend', e => {
   if (now - lastTap < 500) e.preventDefault();
   lastTap = now;
 }, { passive: false });
+
+// ── Dice overlay ─────────────────────────────────────────────────────────────
+
+let diceSpinTimer = null;
+
+function spinDice(onLand) {
+  const el = document.getElementById('dice-number');
+  let spins = 0;
+  const totalSpins = 14;
+  clearInterval(diceSpinTimer);
+
+  function tick() {
+    spins++;
+    const val = Math.floor(Math.random() * 3) + 1;
+    el.classList.remove('pop', 'land');
+    void el.offsetWidth;
+    el.textContent = val;
+    el.classList.add('pop');
+
+    const progress = spins / totalSpins;
+    const delay = 60 + Math.pow(progress, 2) * 340;
+
+    if (spins >= totalSpins) {
+      clearInterval(diceSpinTimer);
+      const result = Math.floor(Math.random() * 3) + 1;
+      setTimeout(() => {
+        el.classList.remove('pop', 'land');
+        void el.offsetWidth;
+        el.textContent = result;
+        el.classList.add('land');
+        if (onLand) onLand(result);
+      }, delay);
+      return;
+    }
+    diceSpinTimer = setTimeout(tick, delay);
+  }
+
+  diceSpinTimer = setTimeout(tick, 60);
+}
+
+function openDiceOverlay() {
+  const overlay = document.getElementById('dice-overlay');
+  const numEl = document.getElementById('dice-number');
+  numEl.textContent = '🎲';
+  numEl.className = 'dice-number';
+  overlay.classList.remove('hidden', 'fading');
+  spinDice();
+}
+
+function closeDiceOverlay() {
+  clearInterval(diceSpinTimer);
+  const overlay = document.getElementById('dice-overlay');
+  overlay.classList.add('fading');
+  setTimeout(() => overlay.classList.add('hidden'), 260);
+}
+
+document.getElementById('dice-roll-again').addEventListener('click', () => spinDice());
+document.getElementById('dice-done').addEventListener('click', () => closeDiceOverlay());
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
 
