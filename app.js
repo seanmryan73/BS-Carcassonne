@@ -795,99 +795,98 @@ document.getElementById('dice-done').addEventListener('click', () => closeDiceOv
 
 // ── Bridge Randomizer ─────────────────────────────────────────────────────────
 
-const BRIDGE_TYPES = ['Straight', 'Curvy'];
-const BRIDGE_TYPE_ICONS = { Straight: '━━━', Curvy: '〰〰〰' };
 const BRIDGE_NUMS = [0, 1, 2, 3];
 
-let bridgeTypeTimer = null;
-let bridgeNumTimer = null;
+let bridgeStraightTimer = null;
+let bridgeCurvyTimer    = null;
 
 function spinBridge() {
-  clearTimeout(bridgeTypeTimer);
-  clearTimeout(bridgeNumTimer);
+  clearTimeout(bridgeStraightTimer);
+  clearTimeout(bridgeCurvyTimer);
 
-  const typeEl  = document.getElementById('bridge-type-display');
-  const numEl   = document.getElementById('bridge-num-display');
-  const typeWin = document.getElementById('bridge-type-window');
-  const numWin  = document.getElementById('bridge-num-window');
-  const scene   = document.getElementById('bridge-scene');
-  if (!typeEl || !numEl) return;
+  const straightEl  = document.getElementById('bridge-straight-display');
+  const curvyEl     = document.getElementById('bridge-curvy-display');
+  const straightWin = document.getElementById('bridge-straight-window');
+  const curvyWin    = document.getElementById('bridge-curvy-window');
+  const scene       = document.getElementById('bridge-scene');
+  if (!straightEl || !curvyEl) return;
 
-  typeWin.classList.remove('glowing');
-  numWin.classList.remove('glowing');
-  typeEl.classList.add('spinning');
-  numEl.classList.add('spinning');
+  straightWin.classList.remove('glowing');
+  curvyWin.classList.remove('glowing');
+  straightEl.classList.remove('popping');
+  curvyEl.classList.remove('popping');
+  straightEl.classList.add('spinning');
+  curvyEl.classList.add('spinning');
 
-  const finalType = BRIDGE_TYPES[Math.floor(Math.random() * 2)];
-  const finalNum  = BRIDGE_NUMS[Math.floor(Math.random() * 4)];
+  const finalStraight = BRIDGE_NUMS[Math.floor(Math.random() * 4)];
+  const finalCurvy    = BRIDGE_NUMS[Math.floor(Math.random() * 4)];
 
-  const TYPE_TICKS = 18;
-  const NUM_TICKS  = 22;
-  let typeTick = 0;
-  let numTick  = 0;
-  let typeIdx  = 0;
-  let numIdx   = 0;
-  let typeDone = false;
-  let numDone  = false;
+  const STRAIGHT_TICKS = 18;
+  const CURVY_TICKS    = 22;
+  let straightTick = 0, curvyTick = 0;
+  let straightIdx  = 0, curvyIdx  = 0;
+  let straightDone = false, curvyDone = false;
 
   function checkBothDone() {
-    if (!typeDone || !numDone) return;
+    if (!straightDone || !curvyDone) return;
     scene.classList.add('shake');
     setTimeout(() => scene.classList.remove('shake'), 500);
-    typeWin.classList.add('glowing');
-    numWin.classList.add('glowing');
   }
 
-  function tickType() {
-    typeTick++;
-    typeIdx = (typeIdx + 1) % BRIDGE_TYPES.length;
-    const t = BRIDGE_TYPES[typeIdx];
-    typeEl.textContent = `${BRIDGE_TYPE_ICONS[t]} ${t}`;
-    const progress = typeTick / TYPE_TICKS;
+  function land(el, win, finalVal, doneFlagSetter) {
+    el.textContent = finalVal;
+    el.classList.remove('spinning');
+    void el.offsetWidth; // force reflow so animation restarts
+    el.classList.add('popping');
+    setTimeout(() => el.classList.remove('popping'), 450);
+    win.classList.add('glowing');
+    doneFlagSetter();
+    checkBothDone();
+  }
+
+  function tickStraight() {
+    straightTick++;
+    straightIdx = (straightIdx + 1) % 4;
+    straightEl.textContent = BRIDGE_NUMS[straightIdx];
+    const progress = straightTick / STRAIGHT_TICKS;
     const delay = 60 + Math.pow(progress, 2.6) * 460;
-    if (typeTick >= TYPE_TICKS) {
-      typeEl.textContent = `${BRIDGE_TYPE_ICONS[finalType]} ${finalType}`;
-      typeEl.classList.remove('spinning');
-      typeDone = true;
-      checkBothDone();
+    if (straightTick >= STRAIGHT_TICKS) {
+      land(straightEl, straightWin, finalStraight, () => { straightDone = true; });
       return;
     }
-    bridgeTypeTimer = setTimeout(tickType, delay);
+    bridgeStraightTimer = setTimeout(tickStraight, delay);
   }
 
-  function tickNum() {
-    numTick++;
-    numIdx = (numIdx + 1) % BRIDGE_NUMS.length;
-    numEl.textContent = BRIDGE_NUMS[numIdx];
-    const progress = numTick / NUM_TICKS;
+  function tickCurvy() {
+    curvyTick++;
+    curvyIdx = (curvyIdx + 1) % 4;
+    curvyEl.textContent = BRIDGE_NUMS[curvyIdx];
+    const progress = curvyTick / CURVY_TICKS;
     const delay = 55 + Math.pow(progress, 2.6) * 480;
-    if (numTick >= NUM_TICKS) {
-      numEl.textContent = finalNum;
-      numEl.classList.remove('spinning');
-      numDone = true;
-      checkBothDone();
+    if (curvyTick >= CURVY_TICKS) {
+      land(curvyEl, curvyWin, finalCurvy, () => { curvyDone = true; });
       return;
     }
-    bridgeNumTimer = setTimeout(tickNum, delay);
+    bridgeCurvyTimer = setTimeout(tickCurvy, delay);
   }
 
-  tickType();
-  setTimeout(() => tickNum(), 120);
+  tickStraight();
+  setTimeout(() => tickCurvy(), 130);
 }
 
 function openBridgeOverlay() {
-  const overlay = document.getElementById('bridge-overlay');
-  const typeWin = document.getElementById('bridge-type-window');
-  const numWin  = document.getElementById('bridge-num-window');
-  typeWin.classList.remove('glowing');
-  numWin.classList.remove('glowing');
+  const overlay     = document.getElementById('bridge-overlay');
+  const straightWin = document.getElementById('bridge-straight-window');
+  const curvyWin    = document.getElementById('bridge-curvy-window');
+  straightWin.classList.remove('glowing');
+  curvyWin.classList.remove('glowing');
   overlay.classList.remove('hidden', 'fading');
   setTimeout(() => spinBridge(), 120);
 }
 
 function closeBridgeOverlay() {
-  clearTimeout(bridgeTypeTimer);
-  clearTimeout(bridgeNumTimer);
+  clearTimeout(bridgeStraightTimer);
+  clearTimeout(bridgeCurvyTimer);
   const overlay = document.getElementById('bridge-overlay');
   overlay.classList.add('fading');
   setTimeout(() => overlay.classList.add('hidden'), 300);
