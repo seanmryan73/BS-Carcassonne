@@ -800,13 +800,12 @@ function startConfetti() {
   canvas.width = canvas.offsetWidth;
   canvas.height = canvas.offsetHeight;
 
-  const COLORS = ['#e91e8c','#2980b9','#f39c12','#27ae60','#c0392b','#9b59b6','#ffffff'];
+  const EMOJIS = ['🐷', '🐷', '🐷', '💩', '💩'];
   const pieces = Array.from({ length: 90 }, () => ({
     x: Math.random() * canvas.width,
     y: Math.random() * -canvas.height,
-    w: 7 + Math.random() * 7,
-    h: 4 + Math.random() * 4,
-    color: COLORS[Math.floor(Math.random() * COLORS.length)],
+    size: 20 + Math.random() * 16,
+    emoji: EMOJIS[Math.floor(Math.random() * EMOJIS.length)],
     rot: Math.random() * Math.PI * 2,
     vx: (Math.random() - 0.5) * 2.5,
     vy: 2.5 + Math.random() * 3,
@@ -821,15 +820,17 @@ function startConfetti() {
       p.x += p.vx;
       p.y += p.vy;
       p.rot += p.vr;
-      if (p.y > canvas.height) {
-        p.y = -p.h;
+      if (p.y > canvas.height + p.size) {
+        p.y = -p.size;
         p.x = Math.random() * canvas.width;
       }
       ctx.save();
-      ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
+      ctx.translate(p.x, p.y);
       ctx.rotate(p.rot);
-      ctx.fillStyle = p.color;
-      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.font = `${p.size}px serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(p.emoji, 0, 0);
       ctx.restore();
     });
     confettiRaf = requestAnimationFrame(draw);
