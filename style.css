@@ -378,6 +378,13 @@ input  { font-family: inherit; font-size: inherit; }
   margin-top: 6px;
 }
 
+.ended-winner-cheat {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.5);
+  font-style: italic;
+  margin-top: 4px;
+}
+
 @keyframes rainbow-glow-text {
   0%   { text-shadow: 0 0 20px hsl(0,100%,65%),   0 0 50px hsl(0,100%,50%); }
   17%  { text-shadow: 0 0 20px hsl(60,100%,65%),  0 0 50px hsl(60,100%,50%); }

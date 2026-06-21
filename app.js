@@ -272,6 +272,7 @@ function renderEnded() {
           <p class="ended-game-over">Game Over</p>
           <p class="ended-winner-name">${winnerLabel}</p>
           <p class="ended-winner-sub">${isTie ? 'It\'s a tie! 🎉' : 'wins! 🎉'}</p>
+          ${!isTie ? '<p class="ended-winner-cheat">...but probably cheated</p>' : ''}
         </div>
       </div>
       <div class="ended-rankings">
