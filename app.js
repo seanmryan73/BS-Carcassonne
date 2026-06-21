@@ -851,3 +851,4 @@ document.addEventListener('visibilitychange', () => {
 
 loadState();
 render();
+if (state.phase === 'playing') acquireWakeLock();
