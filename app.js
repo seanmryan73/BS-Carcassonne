@@ -587,8 +587,16 @@ document.addEventListener('click', e => {
     if (last) {
       sheet.type = last.type;
       sheet.details = { ...last.details };
-      sheet.step = 3;
-      renderSheet();
+      const pts = calcScore(sheet.type, sheet.details);
+      const names = sheet.playerIds.map(id => playerName(id)).join(' & ');
+      dispatch('ADD_EVENT', {
+        playerIds: [...sheet.playerIds],
+        type: sheet.type,
+        points: pts,
+        details: { ...sheet.details }
+      });
+      closeSheet();
+      showToast(`${names} scored ${pts} pt${pts !== 1 ? 's' : ''}`);
     }
 
   // Steppers
