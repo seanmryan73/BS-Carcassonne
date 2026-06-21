@@ -64,6 +64,36 @@
       </div>
     </div>
   </div>
+  <div id="bridge-overlay" class="bridge-overlay hidden">
+    <div class="bridge-scene" id="bridge-scene">
+      <p class="bridge-label">Bridge Randomizer</p>
+      <div class="bridge-slots-row">
+        <div class="bridge-slot-col">
+          <div class="bridge-slot-window" id="bridge-type-window">
+            <div class="bridge-slot-fade-top"></div>
+            <span class="bridge-slot-display" id="bridge-type-display">〰〰〰 Curvy</span>
+            <div class="bridge-slot-win-line"></div>
+            <div class="bridge-slot-fade-bot"></div>
+          </div>
+          <p class="bridge-slot-label">Bridge Type</p>
+        </div>
+        <div class="bridge-slot-divider">×</div>
+        <div class="bridge-slot-col">
+          <div class="bridge-slot-window bridge-slot-window--num" id="bridge-num-window">
+            <div class="bridge-slot-fade-top"></div>
+            <span class="bridge-slot-display bridge-slot-display--num" id="bridge-num-display">0</span>
+            <div class="bridge-slot-win-line"></div>
+            <div class="bridge-slot-fade-bot"></div>
+          </div>
+          <p class="bridge-slot-label">Count</p>
+        </div>
+      </div>
+      <div class="bridge-actions">
+        <button class="btn-primary bridge-roll-again" id="bridge-roll-again">Roll Again</button>
+        <button class="btn-bridge-done" id="bridge-done">Done</button>
+      </div>
+    </div>
+  </div>
   <script src="app.js"></script>
 </body>
 </html>

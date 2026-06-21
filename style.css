@@ -191,6 +191,22 @@ input  { font-family: inherit; font-size: inherit; }
 }
 .btn-dice-roll:active { background: var(--primary); color: white; }
 
+.btn-bridge-roll {
+  width: 100%;
+  padding: 14px;
+  background: none;
+  color: #1a9b8c;
+  border: 2px solid #1a9b8c;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: inherit;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.btn-bridge-roll:active { background: #1a9b8c; color: white; }
+
 /* ── Scoreboard screen ────────────────────────────────────── */
 .score-header {
   background: var(--surface);
@@ -820,6 +836,142 @@ input  { font-family: inherit; font-size: inherit; }
   padding: 6px 16px;
 }
 .btn-dice-done:active { color: white; }
+
+/* ── Bridge Randomizer ────────────────────────────────────── */
+.bridge-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(3, 15, 14, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  opacity: 1;
+  transition: opacity 0.3s;
+}
+.bridge-overlay.hidden { display: none; }
+.bridge-overlay.fading { opacity: 0; }
+
+.bridge-scene {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}
+.bridge-scene.shake { animation: shake 0.45s ease-out; }
+
+.bridge-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+}
+
+.bridge-slots-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.bridge-slot-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.bridge-slot-window {
+  width: 180px;
+  height: 88px;
+  overflow: hidden;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.07);
+  border: 2px solid rgba(255,255,255,0.14);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bridge-slot-window--num { width: 110px; }
+
+.bridge-slot-display {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #fff;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  transition: filter 0.08s;
+  white-space: nowrap;
+}
+.bridge-slot-display--num { font-size: 2.8rem; }
+.bridge-slot-display.spinning { filter: blur(2px); }
+
+.bridge-slot-fade-top,
+.bridge-slot-fade-bot {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 24px;
+  z-index: 2;
+  pointer-events: none;
+}
+.bridge-slot-fade-top {
+  top: 0;
+  background: linear-gradient(to bottom, rgba(3,15,14,0.85), transparent);
+}
+.bridge-slot-fade-bot {
+  bottom: 0;
+  background: linear-gradient(to top, rgba(3,15,14,0.85), transparent);
+}
+
+.bridge-slot-win-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(26,155,140,0.4);
+  top: 50%;
+  z-index: 3;
+}
+
+.bridge-slot-label {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.38);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.bridge-slot-divider {
+  font-size: 1.4rem;
+  color: rgba(255,255,255,0.18);
+  margin-bottom: 20px;
+}
+
+.bridge-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 220px;
+}
+
+.btn-bridge-done {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.45);
+  font-size: 1rem;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 6px 16px;
+}
+.btn-bridge-done:active { color: white; }
+
+#bridge-type-window.glowing,
+#bridge-num-window.glowing { animation: rainbow-glow 2s linear infinite; border-radius: 14px; }
 
 /* ── Toast ────────────────────────────────────────────────── */
 #toast {
