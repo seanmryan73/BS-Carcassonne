@@ -109,8 +109,10 @@ function dispatch(type, payload = {}) {
     if (state.events.length) result = state.events.pop();
   } else if (type === 'END_GAME') {
     state.phase = 'ended';
+    releaseWakeLock();
   } else if (type === 'NEW_GAME') {
     state = { players: [], events: [], phase: 'setup', nextEventId: 0, playerCount: state.playerCount };
+    releaseWakeLock();
   }
   saveState();
   render();
@@ -532,6 +534,7 @@ document.addEventListener('click', e => {
       return { id: i, name, color: setupPlayers[i].color };
     });
     dispatch('START_GAME', { players });
+    acquireWakeLock();
 
   // Scoreboard
   } else if (action === 'open-sheet') {
@@ -825,6 +828,24 @@ function startConfetti() {
 
   draw();
 }
+
+// ── Wake Lock ─────────────────────────────────────────────────────────────────
+
+let wakeLock = null;
+
+async function acquireWakeLock() {
+  if (!('wakeLock' in navigator)) return;
+  try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) { /* denied or unavailable */ }
+}
+
+function releaseWakeLock() {
+  if (wakeLock) { wakeLock.release(); wakeLock = null; }
+}
+
+// Lock releases automatically when tab hides; re-acquire when it returns
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && state.phase === 'playing') acquireWakeLock();
+});
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
 
