@@ -795,7 +795,7 @@ document.getElementById('dice-done').addEventListener('click', () => closeDiceOv
 
 // ── Bridge Randomizer ─────────────────────────────────────────────────────────
 
-const BRIDGE_NUMS = [0, 1, 2, 3];
+const BRIDGE_NUMS = [0, 1, 2];
 
 let bridgeStraightTimer = null;
 let bridgeCurvyTimer    = null;
@@ -818,8 +818,8 @@ function spinBridge() {
   straightEl.classList.add('spinning');
   curvyEl.classList.add('spinning');
 
-  const finalStraight = BRIDGE_NUMS[Math.floor(Math.random() * 4)];
-  const finalCurvy    = BRIDGE_NUMS[Math.floor(Math.random() * 4)];
+  const finalStraight = BRIDGE_NUMS[Math.floor(Math.random() * 3)];
+  const finalCurvy    = BRIDGE_NUMS[Math.floor(Math.random() * 3)];
 
   const STRAIGHT_TICKS = 18;
   const CURVY_TICKS    = 22;
