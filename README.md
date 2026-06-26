@@ -1,4 +1,5 @@
 # TillyTally — Unofficial Scoring for Carcassonne
+![CI](https://github.com/seanmryan73/BS-Carcassonne/actions/workflows/ci.yml/badge.svg)
 
 Installable PWA score tracker for the Carcassonne board game. Runs in the browser, works offline, can be added to the home screen on iOS/Android.
 
