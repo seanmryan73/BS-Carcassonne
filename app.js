@@ -20,7 +20,8 @@ let sheet = {
   step: 1,
   playerIds: [],
   type: null,
-  details: { tiles: 2, pennants: 0, complete: true, cathedral: false, inn: false, surrounding: 0, cities: 1, monasteries: 1, points: 2 }
+  details: { tiles: 2, pennants: 0, complete: true, cathedral: false, inn: false, surrounding: 0, cities: 1, monasteries: 1, points: 2 },
+  editingEventId: null
 };
 
 // ── Persistence ───────────────────────────────────────────────────────────────
@@ -106,6 +107,11 @@ function dispatch(type, payload = {}) {
     state.nextEventId = 0;
   } else if (type === 'ADD_EVENT') {
     state.events.push({ id: state.nextEventId++, ...payload, timestamp: Date.now() });
+  } else if (type === 'EDIT_EVENT') {
+    const ev = state.events.find(e => e.id === payload.id);
+    if (ev) { ev.points = payload.points; ev.details = payload.details; }
+  } else if (type === 'DELETE_EVENT') {
+    state.events = state.events.filter(e => e.id !== payload.id);
   } else if (type === 'UNDO') {
     if (state.events.length) result = state.events.pop();
   } else if (type === 'END_GAME') {
@@ -118,6 +124,16 @@ function dispatch(type, payload = {}) {
   saveState();
   render();
   return result;
+}
+
+// ── Relative time ─────────────────────────────────────────────────────────────
+
+function relativeTime(ts) {
+  const diff = Math.floor((Date.now() - ts) / 1000);
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+  return `${Math.floor(diff / 86400)}d ago`;
 }
 
 // ── Feature label ─────────────────────────────────────────────────────────────
@@ -205,9 +221,17 @@ function renderScoreboard() {
     const each = e.playerIds.length > 1 ? ' ea' : '';
     return `
       <div class="event-item">
-        <div class="event-who">${names}</div>
-        <div class="event-desc">${featureLabel(e.type, e.details)}</div>
-        <div class="event-pts">+${e.points}${each}</div>
+        <div class="event-main">
+          <div class="event-row-top">
+            <span class="event-who">${names}</span>
+            <span class="event-pts">+${e.points}${each}</span>
+          </div>
+          <div class="event-row-bottom">
+            <span class="event-desc">${featureLabel(e.type, e.details)}</span>
+            <span class="event-time">${relativeTime(e.timestamp)}</span>
+          </div>
+        </div>
+        <button type="button" class="event-menu-btn" data-action="event-menu" data-event-id="${e.id}" aria-label="Entry actions">⋮</button>
       </div>`;
   }).join('');
 
@@ -401,6 +425,7 @@ function renderSheetStep3() {
     ? `<div class="score-warning">0 pts — incomplete feature with ${type === 'road' ? 'inn' : 'cathedral'}</div>`
     : '';
   const icons = { city: '🏰', road: '🛣️', monastery: '⛪', farm: '🌾', 'pig-farm': '🐷', other: '✏️' };
+  const isEditing = sheet.editingEventId != null;
 
   return `
     <div class="sheet-handle"></div>
@@ -416,8 +441,31 @@ function renderSheetStep3() {
       <strong>${pts} pt${pts !== 1 ? 's' : ''}${each}</strong>
     </div>
     <button type="button" class="btn-primary btn-add-score" data-action="add-score">
-      Add Score
+      ${isEditing ? 'Save Changes' : 'Add Score'}
     </button>`;
+}
+
+function renderSheetMenu() {
+  const e = state.events.find(ev => ev.id === sheet.editingEventId);
+  if (!e) return '';
+  const icons = { city: '🏰', road: '🛣️', monastery: '⛪', farm: '🌾', 'pig-farm': '🐷', other: '✏️' };
+  const names = e.playerIds.map(id => playerName(id)).join(' & ');
+  const each = e.playerIds.length > 1 ? ' each' : '';
+
+  return `
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <h2 class="sheet-title">${icons[e.type] ?? ''} ${featureLabel(e.type, e.details)}</h2>
+      <button type="button" class="btn-sheet-close" data-action="close-sheet">✕</button>
+    </div>
+    <div class="event-menu-summary">
+      <div>${escHtml(names)} <strong>+${e.points}${each}</strong></div>
+      <div class="event-menu-time">${relativeTime(e.timestamp)}</div>
+    </div>
+    <div class="event-menu-actions">
+      <button type="button" class="btn-primary" data-action="event-edit">Edit Entry</button>
+      <button type="button" class="btn-danger" data-action="event-delete">Delete Entry</button>
+    </div>`;
 }
 
 function renderSheet() {
@@ -426,6 +474,7 @@ function renderSheet() {
   if (sheet.step === 1) { el.classList.remove('sheet-fullscreen'); el.innerHTML = renderSheetStep1(); }
   else if (sheet.step === 2) { el.classList.remove('sheet-fullscreen'); el.innerHTML = renderSheetStep2(); }
   else if (sheet.step === 3) { el.classList.add('sheet-fullscreen'); el.innerHTML = renderSheetStep3(); }
+  else if (sheet.step === 'menu') { el.classList.remove('sheet-fullscreen'); el.innerHTML = renderSheetMenu(); }
 }
 
 // ── Main render ───────────────────────────────────────────────────────────────
@@ -442,7 +491,19 @@ function render() {
 function openSheet() {
   sheet = {
     open: true, step: 1, playerIds: [], type: null,
-    details: { tiles: 2, pennants: 0, complete: true, cathedral: false, inn: false, surrounding: 0, cities: 1, monasteries: 1, points: 2 }
+    details: { tiles: 2, pennants: 0, complete: true, cathedral: false, inn: false, surrounding: 0, cities: 1, monasteries: 1, points: 2 },
+    editingEventId: null
+  };
+  renderSheet();
+  document.getElementById('sheet-backdrop').classList.remove('hidden');
+  requestAnimationFrame(() => document.getElementById('sheet').classList.add('open'));
+}
+
+function openEventMenu(eventId) {
+  sheet = {
+    open: true, step: 'menu', playerIds: [], type: null,
+    details: { tiles: 2, pennants: 0, complete: true, cathedral: false, inn: false, surrounding: 0, cities: 1, monasteries: 1, points: 2 },
+    editingEventId: eventId
   };
   renderSheet();
   document.getElementById('sheet-backdrop').classList.remove('hidden');
@@ -576,8 +637,30 @@ document.addEventListener('click', e => {
     closeSheet();
 
   } else if (action === 'sheet-back') {
-    sheet.step--;
+    if (sheet.editingEventId != null) sheet.step = 'menu';
+    else sheet.step--;
     renderSheet();
+
+  } else if (action === 'event-menu') {
+    openEventMenu(parseInt(btn.dataset.eventId));
+
+  } else if (action === 'event-edit') {
+    const e = state.events.find(ev => ev.id === sheet.editingEventId);
+    if (e) {
+      sheet.playerIds = [...e.playerIds];
+      sheet.type = e.type;
+      sheet.details = { ...e.details };
+      sheet.step = 3;
+      renderSheet();
+    }
+
+  } else if (action === 'event-delete') {
+    const e = state.events.find(ev => ev.id === sheet.editingEventId);
+    if (e && confirm('Delete this score entry?')) {
+      dispatch('DELETE_EVENT', { id: e.id });
+      closeSheet();
+      showToast('Entry deleted');
+    }
 
   } else if (action === 'select-player') {
     sheet.playerIds = [parseInt(btn.dataset.playerId)];
@@ -626,14 +709,20 @@ document.addEventListener('click', e => {
   else if (action === 'add-score') {
     const pts = calcScore(sheet.type, sheet.details);
     const names = sheet.playerIds.map(id => playerName(id)).join(' & ');
-    dispatch('ADD_EVENT', {
-      playerIds: [...sheet.playerIds],
-      type: sheet.type,
-      points: pts,
-      details: { ...sheet.details }
-    });
-    closeSheet();
-    showToast(`${names} scored ${pts} pt${pts !== 1 ? 's' : ''}`);
+    if (sheet.editingEventId != null) {
+      dispatch('EDIT_EVENT', { id: sheet.editingEventId, points: pts, details: { ...sheet.details } });
+      closeSheet();
+      showToast(`Entry updated: ${pts} pt${pts !== 1 ? 's' : ''}`);
+    } else {
+      dispatch('ADD_EVENT', {
+        playerIds: [...sheet.playerIds],
+        type: sheet.type,
+        points: pts,
+        details: { ...sheet.details }
+      });
+      closeSheet();
+      showToast(`${names} scored ${pts} pt${pts !== 1 ? 's' : ''}`);
+    }
   }
 });
 
@@ -687,9 +776,15 @@ document.addEventListener('touchstart', e => {
   active?.blur();
   const pts = calcScore(sheet.type, sheet.details);
   const names = sheet.playerIds.map(id => playerName(id)).join(' & ');
-  dispatch('ADD_EVENT', { playerIds: [...sheet.playerIds], type: sheet.type, points: pts, details: { ...sheet.details } });
-  closeSheet();
-  showToast(`${names} scored ${pts} pt${pts !== 1 ? 's' : ''}`);
+  if (sheet.editingEventId != null) {
+    dispatch('EDIT_EVENT', { id: sheet.editingEventId, points: pts, details: { ...sheet.details } });
+    closeSheet();
+    showToast(`Entry updated: ${pts} pt${pts !== 1 ? 's' : ''}`);
+  } else {
+    dispatch('ADD_EVENT', { playerIds: [...sheet.playerIds], type: sheet.type, points: pts, details: { ...sheet.details } });
+    closeSheet();
+    showToast(`${names} scored ${pts} pt${pts !== 1 ? 's' : ''}`);
+  }
 }, { passive: false });
 
 // ── Disable pinch-to-zoom and double-tap zoom on iOS ──────────────────────────

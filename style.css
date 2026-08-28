@@ -307,17 +307,72 @@ input  { font-family: inherit; font-size: inherit; }
 
 .event-item {
   display: flex;
-  align-items: baseline;
-  gap: 8px;
-  padding: 10px 14px;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 6px 8px 14px;
   background: var(--surface);
   border-radius: 10px;
   margin-bottom: 8px;
   box-shadow: 0 1px 3px var(--shadow);
 }
+.event-main      { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.event-row-top   { display: flex; align-items: baseline; gap: 8px; }
+.event-row-bottom { display: flex; align-items: baseline; gap: 8px; }
 .event-who   { font-weight: 600; font-size: 0.9rem; flex-shrink: 0; }
 .event-desc  { flex: 1; font-size: 0.85rem; color: var(--text-muted); min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.event-pts   { font-weight: 700; font-size: 0.95rem; color: var(--primary); flex-shrink: 0; }
+.event-pts   { font-weight: 700; font-size: 0.95rem; color: var(--primary); flex-shrink: 0; margin-left: auto; }
+.event-time  { font-size: 0.75rem; color: var(--text-muted); opacity: 0.7; flex-shrink: 0; }
+
+.event-menu-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font-size: 18px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.event-menu-btn:active { background: var(--bg); }
+
+.event-menu-summary {
+  padding: 4px 0 20px;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.event-menu-time { font-size: 0.8rem; color: var(--text-muted); flex-shrink: 0; }
+
+.event-menu-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+}
+
+.btn-danger {
+  width: 100%;
+  padding: 14px;
+  background: none;
+  color: #c0392b;
+  border: 2px solid #c0392b;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: inherit;
+  letter-spacing: 0.3px;
+  transition: background 0.15s, color 0.15s;
+  -webkit-appearance: none;
+}
+.btn-danger:active { background: #c0392b; color: white; }
 
 .fab {
   position: fixed;
