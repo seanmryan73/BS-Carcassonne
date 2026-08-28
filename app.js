@@ -611,9 +611,13 @@ document.addEventListener('click', e => {
 
   } else if (action === 'remove-player') {
     if (state.roster.length > MIN_PLAYERS) {
-      state.roster.splice(parseInt(btn.dataset.idx), 1);
-      saveState();
-      render();
+      const idx = parseInt(btn.dataset.idx);
+      const name = state.roster[idx].name || `Player ${idx + 1}`;
+      if (confirm(`Remove ${name} from the player list?`)) {
+        state.roster.splice(idx, 1);
+        saveState();
+        render();
+      }
     }
 
   } else if (action === 'start-game') {
