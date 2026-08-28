@@ -1,4 +1,4 @@
-const CACHE = 'carc-v11';
+const CACHE = 'carc-v12';
 const ASSETS = [
   './',
   './index.html',
