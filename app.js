@@ -20,7 +20,7 @@ let sheet = {
   step: 1,
   playerIds: [],
   type: null,
-  details: { tiles: 2, pennants: 0, complete: true, cathedral: false, inn: false, surrounding: 0, cities: 1, monasteries: 1, points: 2 },
+  details: { tiles: 2, complete: true, cathedral: false, inn: false, surrounding: 0, cities: 1, monasteries: 1, points: 2 },
   editingEventId: null
 };
 
@@ -48,7 +48,6 @@ function saveState() {
 
 function calcScore(type, d) {
   const tiles = parseInt(d.tiles) || 0;
-  const pennants = parseInt(d.pennants) || 0;
   if (type === 'city') {
     if (d.cathedral && !d.complete) return 0;
     const mult = d.cathedral ? 3 : (d.complete ? 2 : 1);
@@ -491,7 +490,7 @@ function render() {
 function openSheet() {
   sheet = {
     open: true, step: 1, playerIds: [], type: null,
-    details: { tiles: 2, pennants: 0, complete: true, cathedral: false, inn: false, surrounding: 0, cities: 1, monasteries: 1, points: 2 },
+    details: { tiles: 2, complete: true, cathedral: false, inn: false, surrounding: 0, cities: 1, monasteries: 1, points: 2 },
     editingEventId: null
   };
   renderSheet();
@@ -502,7 +501,7 @@ function openSheet() {
 function openEventMenu(eventId) {
   sheet = {
     open: true, step: 'menu', playerIds: [], type: null,
-    details: { tiles: 2, pennants: 0, complete: true, cathedral: false, inn: false, surrounding: 0, cities: 1, monasteries: 1, points: 2 },
+    details: { tiles: 2, complete: true, cathedral: false, inn: false, surrounding: 0, cities: 1, monasteries: 1, points: 2 },
     editingEventId: eventId
   };
   renderSheet();
@@ -692,8 +691,6 @@ document.addEventListener('click', e => {
   // Steppers
   } else if (action === 'tiles-dec')       { sheet.details.tiles = Math.max(1, sheet.details.tiles - 1); renderSheet(); }
   else if (action === 'tiles-inc')          { sheet.details.tiles++; renderSheet(); }
-  else if (action === 'pennants-dec')       { sheet.details.pennants = Math.max(0, sheet.details.pennants - 1); renderSheet(); }
-  else if (action === 'pennants-inc')       { sheet.details.pennants++; renderSheet(); }
   else if (action === 'surrounding-dec')    { sheet.details.surrounding = Math.max(0, sheet.details.surrounding - 1); renderSheet(); }
   else if (action === 'surrounding-inc')    { sheet.details.surrounding = Math.min(8, sheet.details.surrounding + 1); renderSheet(); }
   else if (action === 'cities-dec')         { sheet.details.cities = Math.max(1, sheet.details.cities - 1); renderSheet(); }
@@ -742,7 +739,7 @@ document.addEventListener('change', e => {
   let val = parseInt(input.value);
   if (isNaN(val)) val = min;
   val = Math.min(max, Math.max(min, val));
-  const fieldMap = { tiles: 'tiles', pennants: 'pennants', surrounding: 'surrounding', cities: 'cities', monasteries: 'monasteries', points: 'points' };
+  const fieldMap = { tiles: 'tiles', surrounding: 'surrounding', cities: 'cities', monasteries: 'monasteries', points: 'points' };
   if (action in fieldMap) {
     if (!isNaN(val)) sheet.details[fieldMap[action]] = val;
     renderSheet();

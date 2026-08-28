@@ -17,7 +17,7 @@ TillyTally — unofficial score tracker for the Carcassonne board game. Progress
 
 - **No build step** — files are served as-is from GitHub Pages. Do not add npm, webpack, TypeScript, Vite, or any bundler.
 - **Vanilla JS only** — no React, Vue, Angular, or external JS libraries.
-- **Service worker cache version must be bumped** — when any cached asset changes, increment the cache name in `sw.js` (currently `carc-v14`). Forgetting this causes stale assets for installed PWA users.
+- **Service worker cache version must be bumped** — when any cached asset changes, increment the cache name in `sw.js` (currently `carc-v15`). Forgetting this causes stale assets for installed PWA users.
 - **`dispatch(type, payload)` pattern** — all state changes go through `dispatch` → mutate `state` → `saveState()` → `render()`. Do not mutate state directly.
 - **Mobile-first** — viewport has `user-scalable=no`; keep touch targets large (44px minimum).
 
