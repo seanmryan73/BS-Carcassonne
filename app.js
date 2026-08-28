@@ -1,6 +1,12 @@
 const STORAGE_KEY = 'carc_game';
-const PLAYER_COLORS = ['#e91e8c', '#2980b9', '#2c3e50', '#f39c12', '#27ae60', '#c0392b'];
+const PLAYER_COLORS = ['#e91e8c', '#2980b9', '#2c3e50', '#f39c12', '#27ae60', '#c0392b', '#8e44ad', '#16a085'];
 const DEFAULT_NAMES = ['Sean', 'Casey', 'Ted', 'Jim', 'Greg', 'Logan'];
+const MIN_PLAYERS = 2;
+const MAX_PLAYERS = PLAYER_COLORS.length;
+
+function defaultRoster() {
+  return DEFAULT_NAMES.map((name, i) => ({ name, color: PLAYER_COLORS[i], selected: true }));
+}
 
 // ── State ─────────────────────────────────────────────────────────────────────
 
@@ -9,11 +15,8 @@ let state = {
   events: [],
   phase: 'setup',
   nextEventId: 0,
-  playerCount: 6
+  roster: defaultRoster()
 };
-
-// Setup-only state: names and colors before game starts
-let setupPlayers = DEFAULT_NAMES.map((name, i) => ({ name, color: PLAYER_COLORS[i] }));
 
 let sheet = {
   open: false,
@@ -32,9 +35,8 @@ function loadState() {
     if (saved) {
       const parsed = JSON.parse(saved);
       state = { ...state, ...parsed };
-      // Restore setup player count indicator from saved state
-      if (state.players.length) {
-        state.playerCount = state.players.length;
+      if (!state.roster || !state.roster.length) {
+        state.roster = defaultRoster();
       }
     }
   } catch (e) { /* ignore */ }
@@ -117,7 +119,7 @@ function dispatch(type, payload = {}) {
     state.phase = 'ended';
     releaseWakeLock();
   } else if (type === 'NEW_GAME') {
-    state = { players: [], events: [], phase: 'setup', nextEventId: 0, playerCount: state.playerCount };
+    state = { players: [], events: [], phase: 'setup', nextEventId: 0, roster: state.roster };
     releaseWakeLock();
   }
   saveState();
@@ -161,22 +163,25 @@ function featureLabel(type, d) {
 // ── Render: setup ─────────────────────────────────────────────────────────────
 
 function renderSetup() {
-  const count = state.playerCount || 2;
+  const selectedCount = state.roster.filter(p => p.selected).length;
 
-  const countBtns = [2, 3, 4, 5, 6].map(n =>
-    `<button class="count-btn ${n === count ? 'active' : ''}" data-action="set-count" data-count="${n}">${n}</button>`
-  ).join('');
-
-  const rows = Array.from({ length: count }, (_, i) => {
-    const p = setupPlayers[i];
-    return `
-      <div class="setup-player-row">
+  const rows = state.roster.map((p, i) => `
+      <div class="setup-player-row ${p.selected ? '' : 'unselected'}">
         <div class="color-dot" style="background:${p.color}"
              data-action="pick-color" data-idx="${i}"></div>
         <input class="player-name-input" type="text" value="${escHtml(p.name)}"
                placeholder="Player ${i + 1}" data-action="set-name" data-idx="${i}" maxlength="12">
-      </div>`;
-  }).join('');
+        <button type="button" class="toggle-btn player-toggle ${p.selected ? 'on' : ''}"
+                data-action="toggle-player" data-idx="${i}" aria-label="Toggle ${escHtml(p.name) || 'player'}">
+          <span class="toggle-track"><span class="toggle-thumb"></span></span>
+        </button>
+        <button type="button" class="btn-remove-player" data-action="remove-player" data-idx="${i}"
+                aria-label="Remove player" ${state.roster.length <= MIN_PLAYERS ? 'disabled' : ''}>✕</button>
+      </div>`).join('');
+
+  const addPlayerBtn = state.roster.length < MAX_PLAYERS
+    ? `<button type="button" class="btn-add-player" data-action="add-player">+ Add Player</button>`
+    : '';
 
   return `
     <div class="screen setup-screen">
@@ -189,12 +194,13 @@ function renderSetup() {
         <div class="setup-form">
           <div class="field-row">
             <span class="field-label">Players</span>
-            <div class="count-buttons">${countBtns}</div>
+            <span class="field-count">${selectedCount} selected</span>
           </div>
           <div class="player-list">${rows}</div>
+          ${addPlayerBtn}
           <button class="btn-dice-roll" data-action="roll-dice">🎲 Dice Roll</button>
           <button class="btn-bridge-roll" data-action="bridge-randomizer">🌉 Bridge Randomizer</button>
-          <button class="btn-primary" data-action="start-game">Start Game</button>
+          <button class="btn-primary" data-action="start-game" ${selectedCount < MIN_PLAYERS ? 'disabled' : ''}>Start Game</button>
         </div>
       </div>
     </div>`;
@@ -539,11 +545,15 @@ function showToast(msg) {
 
 // ── Color picker ──────────────────────────────────────────────────────────────
 
+function nextAvailableColor() {
+  return PLAYER_COLORS.find(c => !state.roster.some(p => p.color === c)) ?? PLAYER_COLORS[state.roster.length % PLAYER_COLORS.length];
+}
+
 function showColorPicker(idx) {
   document.getElementById('color-picker-popup')?.remove();
 
   const dots = PLAYER_COLORS.map(c => `
-    <button type="button" class="color-option ${setupPlayers[idx].color === c ? 'selected' : ''}"
+    <button type="button" class="color-option ${state.roster[idx].color === c ? 'selected' : ''}"
             style="background:${c}" data-action="apply-color" data-idx="${idx}" data-color="${c}">
     </button>`).join('');
 
@@ -578,25 +588,41 @@ document.addEventListener('click', e => {
   const action = btn.dataset.action;
 
   // Setup
-  if (action === 'set-count') {
-    state.playerCount = parseInt(btn.dataset.count);
-    render();
-
-  } else if (action === 'pick-color') {
+  if (action === 'pick-color') {
     showColorPicker(parseInt(btn.dataset.idx));
 
   } else if (action === 'apply-color') {
-    setupPlayers[parseInt(btn.dataset.idx)].color = btn.dataset.color;
+    state.roster[parseInt(btn.dataset.idx)].color = btn.dataset.color;
     document.getElementById('color-picker-popup')?.remove();
+    saveState();
     render();
 
+  } else if (action === 'toggle-player') {
+    state.roster[parseInt(btn.dataset.idx)].selected = !state.roster[parseInt(btn.dataset.idx)].selected;
+    saveState();
+    render();
+
+  } else if (action === 'add-player') {
+    if (state.roster.length < MAX_PLAYERS) {
+      state.roster.push({ name: '', color: nextAvailableColor(), selected: true });
+      saveState();
+      render();
+    }
+
+  } else if (action === 'remove-player') {
+    if (state.roster.length > MIN_PLAYERS) {
+      state.roster.splice(parseInt(btn.dataset.idx), 1);
+      saveState();
+      render();
+    }
+
   } else if (action === 'start-game') {
-    const count = state.playerCount || 2;
-    const players = Array.from({ length: count }, (_, i) => {
+    const selected = state.roster.map((p, i) => ({ p, i })).filter(x => x.p.selected);
+    const players = selected.map(({ p, i }, seq) => {
       const input = document.querySelector(`[data-action="set-name"][data-idx="${i}"]`);
-      const name = (input?.value ?? setupPlayers[i].name).trim() || DEFAULT_NAMES[i];
-      setupPlayers[i].name = name;
-      return { id: i, name, color: setupPlayers[i].color };
+      const name = (input?.value ?? p.name).trim() || `Player ${i + 1}`;
+      p.name = name;
+      return { id: seq, name, color: p.color };
     });
     dispatch('START_GAME', { players });
     acquireWakeLock();
@@ -726,7 +752,10 @@ document.addEventListener('click', e => {
 // Player name updates without re-render (preserve focus)
 document.addEventListener('input', e => {
   const input = e.target.closest('[data-action="set-name"]');
-  if (input) setupPlayers[parseInt(input.dataset.idx)].name = input.value;
+  if (input) {
+    state.roster[parseInt(input.dataset.idx)].name = input.value;
+    saveState();
+  }
 });
 
 // Stepper direct input
