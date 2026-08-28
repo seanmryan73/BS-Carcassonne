@@ -20,7 +20,7 @@ let sheet = {
   step: 1,
   playerIds: [],
   type: null,
-  details: { tiles: 2, pennants: 0, complete: true, cathedral: false, inn: false, surrounding: 0, cities: 1, points: 0 }
+  details: { tiles: 2, pennants: 0, complete: true, cathedral: false, inn: false, surrounding: 0, cities: 1, monasteries: 1, points: 2 }
 };
 
 // ── Persistence ───────────────────────────────────────────────────────────────
@@ -58,7 +58,8 @@ function calcScore(type, d) {
     return tiles * (d.inn ? 2 : 1);
   }
   if (type === 'monastery') {
-    return d.complete ? 9 : 1 + Math.min(8, parseInt(d.surrounding) || 0);
+    const monasteries = parseInt(d.monasteries) || 1;
+    return monasteries * (d.complete ? 9 : 1 + Math.min(8, parseInt(d.surrounding) || 0));
   }
   if (type === 'farm') {
     return (parseInt(d.cities) || 0) * 3;
@@ -134,6 +135,7 @@ function featureLabel(type, d) {
     if (!d.complete) notes.push('incomplete');
     if (d.inn) notes.push('inn');
   } else if (type === 'monastery') {
+    if ((d.monasteries || 1) > 1) notes.push(`${d.monasteries}x`);
     notes.push(d.complete ? 'complete' : `${d.surrounding} surrounding`);
   } else if (type === 'farm' || type === 'pig-farm') {
     notes.push(`${d.cities} ${d.cities == 1 ? 'city' : 'cities'}`);
@@ -380,6 +382,7 @@ function renderSheetStep3() {
       ? `<div class="detail-row"><label>Surrounding tiles</label>${stepper('surrounding', d.surrounding, 0, 8)}</div>`
       : '';
     fields = `
+      <div class="detail-row"><label>Monasteries</label>${stepper('monasteries', d.monasteries, 1)}</div>
       <div class="toggle-row">${toggleBtn('toggle-complete', d.complete, 'Complete')}</div>
       ${surroundRow}`;
   } else if (type === 'farm' || type === 'pig-farm') {
@@ -439,7 +442,7 @@ function render() {
 function openSheet() {
   sheet = {
     open: true, step: 1, playerIds: [], type: null,
-    details: { tiles: 2, pennants: 0, complete: true, cathedral: false, inn: false, surrounding: 0, cities: 1, points: 0 }
+    details: { tiles: 2, pennants: 0, complete: true, cathedral: false, inn: false, surrounding: 0, cities: 1, monasteries: 1, points: 2 }
   };
   renderSheet();
   document.getElementById('sheet-backdrop').classList.remove('hidden');
@@ -612,6 +615,8 @@ document.addEventListener('click', e => {
   else if (action === 'surrounding-inc')    { sheet.details.surrounding = Math.min(8, sheet.details.surrounding + 1); renderSheet(); }
   else if (action === 'cities-dec')         { sheet.details.cities = Math.max(1, sheet.details.cities - 1); renderSheet(); }
   else if (action === 'cities-inc')         { sheet.details.cities++; renderSheet(); }
+  else if (action === 'monasteries-dec')    { sheet.details.monasteries = Math.max(1, sheet.details.monasteries - 1); renderSheet(); }
+  else if (action === 'monasteries-inc')    { sheet.details.monasteries++; renderSheet(); }
   else if (action === 'points-dec')         { sheet.details.points = Math.max(-99, sheet.details.points - 1); renderSheet(); }
   else if (action === 'points-inc')         { sheet.details.points++; renderSheet(); }
   else if (action === 'toggle-complete')    { sheet.details.complete = !sheet.details.complete; renderSheet(); }
@@ -648,7 +653,7 @@ document.addEventListener('change', e => {
   let val = parseInt(input.value);
   if (isNaN(val)) val = min;
   val = Math.min(max, Math.max(min, val));
-  const fieldMap = { tiles: 'tiles', pennants: 'pennants', surrounding: 'surrounding', cities: 'cities', points: 'points' };
+  const fieldMap = { tiles: 'tiles', pennants: 'pennants', surrounding: 'surrounding', cities: 'cities', monasteries: 'monasteries', points: 'points' };
   if (action in fieldMap) {
     if (!isNaN(val)) sheet.details[fieldMap[action]] = val;
     renderSheet();
