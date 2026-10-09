@@ -1,3 +1,4 @@
+const APP_VERSION = '2026.10.09';
 const STORAGE_KEY = 'carc_game';
 const PLAYER_COLORS = ['#e91e8c', '#2980b9', '#2c3e50', '#f39c12', '#27ae60', '#c0392b', '#8e44ad', '#16a085'];
 const DEFAULT_NAMES = ['Sean', 'Casey', 'Ted', 'Jim', 'Greg', 'Logan'];
@@ -202,6 +203,7 @@ function renderSetup() {
           <button class="btn-bridge-roll" data-action="bridge-randomizer">🌉 Bridge Randomizer</button>
           <button class="btn-primary" data-action="start-game" ${selectedCount < MIN_PLAYERS ? 'disabled' : ''}>Start Game</button>
         </div>
+        <p class="app-version">v${APP_VERSION}</p>
       </div>
     </div>`;
 }
@@ -817,17 +819,12 @@ document.addEventListener('touchstart', e => {
   }
 }, { passive: false });
 
-// ── Disable pinch-to-zoom and double-tap zoom on iOS ──────────────────────────
+// ── Disable pinch-to-zoom on iOS ──────────────────────────────────────────────
+// Double-tap zoom is handled by `touch-action: manipulation` in style.css. Don't
+// preventDefault() on touchend for it: that cancels the click, dropping fast taps.
 
 document.addEventListener('touchmove', e => {
   if (e.touches.length > 1) e.preventDefault();
-}, { passive: false });
-
-let lastTap = 0;
-document.addEventListener('touchend', e => {
-  const now = Date.now();
-  if (now - lastTap < 500) e.preventDefault();
-  lastTap = now;
 }, { passive: false });
 
 // ── Dice overlay ─────────────────────────────────────────────────────────────

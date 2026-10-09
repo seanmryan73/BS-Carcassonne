@@ -11,3 +11,7 @@ jobs:
           test -f app.js
           test -f sw.js
           test -f manifest.json
+      - name: No touchend handler (cancelling it drops taps on Android)
+        run: "! grep -n \"addEventListener('touchend'\" app.js"
+      - name: APP_VERSION has YYYY.MM.DD[a] shape
+        run: grep -Eq "^const APP_VERSION = '[0-9]{4}\.[0-9]{2}\.[0-9]{2}[a-z]?';" app.js

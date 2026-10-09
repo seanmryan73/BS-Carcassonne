@@ -18,9 +18,10 @@ TillyTally — unofficial score tracker for the Carcassonne board game. Progress
 
 - **No build step** — files are served as-is from GitHub Pages. Do not add npm, webpack, TypeScript, Vite, or any bundler.
 - **Vanilla JS only** — no React, Vue, Angular, or external JS libraries.
-- **Service worker cache version must be bumped** — when any cached asset changes, increment the cache name in `sw.js` (currently `carc-v17`). Forgetting this causes stale assets for installed PWA users.
+- **Service worker cache version must be bumped** — when any cached asset changes, increment the cache name in `sw.js` (currently `carc-v18`). Forgetting this causes stale assets for installed PWA users. On a substantive change also bump `APP_VERSION` (top of `app.js`, `YYYY.MM.DD[a]`), shown at the bottom of the setup screen.
 - **`dispatch(type, payload)` pattern** — all state changes go through `dispatch` → mutate `state` → `saveState()` → `render()`. Do not mutate state directly. Exception: the setup screen (`renderSetup`, player roster edits) intentionally bypasses `dispatch()` — direct mutation + `saveState()` + `render()` — and the name-input listener skips `render()` entirely to preserve focus while typing. Don't "fix" either into the dispatch pattern.
 - **Mobile-first** — viewport has `user-scalable=no`; keep touch targets large (44px minimum).
+- **Never `preventDefault()` on `touchend`** (e.g. a "double-tap zoom" guard) — on Android it cancels the click and silently drops fast taps. `touch-action: manipulation` in `style.css` already blocks double-tap zoom.
 
 ## Working rules
 
