@@ -11,6 +11,7 @@ TillyTally — unofficial score tracker for the Carcassonne board game. Progress
 
 @c:\_repos\Obsidian\Notes\Claude\Reference\Author-Version-Standards.md
 @c:\_repos\Obsidian\Notes\Claude\Reference\Core-Rules.md
+@c:\_repos\Obsidian\Notes\Claude\Reference\Core-Rules-Web.md
 @c:\_repos\Obsidian\Notes\Claude\Projects\BS-Carcassonne Claude Context.md
 
 ## Read before you…
